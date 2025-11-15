@@ -3,6 +3,7 @@
         "angularx",
         "autotable",
         "jspdf",
-        "qrcode"
+        "qrcode",
+        "Waitlist"
     ]
 }

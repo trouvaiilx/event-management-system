@@ -1,0 +1,300 @@
+<!-- src/app/components/organizer/ticket-setup/ticket-setup.component.html -->
+
+<div class="ticket-setup-container">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div class="page-header">
+      <button mat-icon-button (click)="onCancel()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1>Ticket Setup</h1>
+        <p class="subtitle" *ngIf="event">{{event.name}}</p>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading">
+      <!-- Summary Card -->
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="summary-stats">
+            <div class="stat-item">
+              <mat-icon>confirmation_number</mat-icon>
+              <div>
+                <h3>{{ticketCategories.length}}</h3>
+                <p>Ticket Categories</p>
+              </div>
+            </div>
+            <div class="stat-item">
+              <mat-icon>event_seat</mat-icon>
+              <div>
+                <h3>{{getTotalSeats()}}</h3>
+                <p>Total Seats</p>
+              </div>
+            </div>
+            <div class="stat-item">
+              <mat-icon>attach_money</mat-icon>
+              <div>
+                <h3>${{getTotalRevenuePotential().toFixed(2)}}</h3>
+                <p>Revenue Potential</p>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Add Ticket Button -->
+      <div class="add-ticket-section">
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="toggleForm()"
+          *ngIf="!showForm"
+        >
+          <mat-icon>add_circle</mat-icon>
+          Add Ticket Category
+        </button>
+      </div>
+
+      <!-- Add Ticket Form -->
+      <mat-card *ngIf="showForm" class="ticket-form-card">
+        <mat-card-header>
+          <mat-card-title>Add New Ticket Category</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="ticketForm" (ngSubmit)="onAddTicket()">
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Ticket Type</mat-label>
+                <mat-select formControlName="type" required>
+                  <mat-option *ngFor="let type of ticketTypes" [value]="type">
+                    {{formatTicketType(type)}}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>style</mat-icon>
+                <mat-error *ngIf="f['type'].hasError('required')">
+                  Ticket type is required
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Price</mat-label>
+                <input 
+                  matInput 
+                  type="number" 
+                  formControlName="price"
+                  placeholder="0.00"
+                  required
+                >
+                <span matPrefix>$&nbsp;</span>
+                <mat-error *ngIf="f['price'].hasError('required')">
+                  Price is required
+                </mat-error>
+                <mat-error *ngIf="f['price'].hasError('min')">
+                  Price must be at least 0
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Quantity</mat-label>
+                <input 
+                  matInput 
+                  type="number" 
+                  formControlName="quantity"
+                  placeholder="0"
+                  required
+                >
+                <mat-icon matPrefix>numbers</mat-icon>
+                <mat-error *ngIf="f['quantity'].hasError('required')">
+                  Quantity is required
+                </mat-error>
+                <mat-error *ngIf="f['quantity'].hasError('min')">
+                  Quantity must be at least 1
+                </mat-error>
+                <mat-hint>Number of tickets available</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Seating Section</mat-label>
+                <mat-select formControlName="section" required>
+                  <mat-option *ngFor="let section of seatSections" [value]="section">
+                    {{formatSection(section)}} Section
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>event_seat</mat-icon>
+                <mat-error *ngIf="f['section'].hasError('required')">
+                  Section is required
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Max Per Booking</mat-label>
+                <input 
+                  matInput 
+                  type="number" 
+                  formControlName="maxPerBooking"
+                  placeholder="10"
+                >
+                <mat-icon matPrefix>shopping_cart</mat-icon>
+                <mat-error *ngIf="f['maxPerBooking'].hasError('min')">
+                  Must be at least 1
+                </mat-error>
+                <mat-hint>Maximum tickets per transaction</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Restrictions (Optional)</mat-label>
+                <input 
+                  matInput 
+                  formControlName="restrictions"
+                  placeholder="e.g., Age 18+, ID Required"
+                >
+                <mat-icon matPrefix>info</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button 
+                mat-raised-button 
+                color="primary" 
+                type="submit"
+                [disabled]="addingTicket || ticketForm.invalid"
+              >
+                <mat-spinner 
+                  *ngIf="addingTicket" 
+                  diameter="20" 
+                  class="button-spinner"
+                ></mat-spinner>
+                <span *ngIf="!addingTicket">
+                  <mat-icon>add</mat-icon>
+                  Add Ticket
+                </span>
+              </button>
+
+              <button 
+                mat-button 
+                type="button"
+                (click)="toggleForm()"
+                [disabled]="addingTicket"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Ticket Categories List -->
+      <mat-card class="categories-card">
+        <mat-card-header>
+          <mat-card-title>Ticket Categories</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="ticketCategories.length === 0" class="empty-state">
+            <mat-icon>confirmation_number</mat-icon>
+            <p>No ticket categories added yet</p>
+            <p class="hint">Add at least one ticket category to continue</p>
+          </div>
+
+          <div class="categories-grid" *ngIf="ticketCategories.length > 0">
+            <mat-card *ngFor="let category of ticketCategories" class="category-card">
+              <mat-card-content>
+                <div class="category-header">
+                  <h3>{{formatTicketType(category.type)}}</h3>
+                  <mat-chip>{{formatSection(category.section)}}</mat-chip>
+                </div>
+
+                <div class="category-details">
+                  <div class="detail-item">
+                    <mat-icon>attach_money</mat-icon>
+                    <span>${{category.price.toFixed(2)}}</span>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>confirmation_number</mat-icon>
+                    <span>{{category.quantity}} tickets</span>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>shopping_cart</mat-icon>
+                    <span>Max {{category.maxPerBooking}} per booking</span>
+                  </div>
+                </div>
+
+                <div class="category-stats">
+                  <div class="stat">
+                    <span class="label">Available:</span>
+                    <span class="value">{{category.availableQuantity}}</span>
+                  </div>
+                  <div class="stat">
+                    <span class="label">Potential Revenue:</span>
+                    <span class="value">${{(category.quantity * category.price).toFixed(2)}}</span>
+                  </div>
+                </div>
+
+                <div *ngIf="category.restrictions" class="restrictions">
+                  <mat-icon>info</mat-icon>
+                  <span>{{category.restrictions}}</span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Seating Layout Info -->
+      <mat-card class="info-card">
+        <mat-card-content>
+          <div class="info-content">
+            <mat-icon>info</mat-icon>
+            <div>
+              <h4>Auditorium Seating Layout</h4>
+              <p>
+                The system automatically generates seats based on your ticket configuration. 
+                Seats are organized in rows (A, B, C...) with 10 seats per row. 
+                Each seat is assigned to the corresponding ticket category and section.
+              </p>
+              <ul>
+                <li><strong>Front Section:</strong> Closest to the stage, premium experience</li>
+                <li><strong>Middle Section:</strong> Balanced view and acoustics</li>
+                <li><strong>Back Section:</strong> Affordable seating with full view</li>
+              </ul>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Action Buttons -->
+      <div class="action-section">
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="onPublishEvent()"
+          [disabled]="ticketCategories.length === 0"
+        >
+          <mat-icon>publish</mat-icon>
+          Publish Event
+        </button>
+
+        <button 
+          mat-raised-button 
+          (click)="onSaveDraft()"
+        >
+          <mat-icon>save</mat-icon>
+          Save as Draft
+        </button>
+
+        <button 
+          mat-button 
+          (click)="onCancel()"
+        >
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,163 @@
+// src/app/components/organizer/create-event/create-event.component.scss
+
+.create-event-container {
+  .content {
+    max-width: 900px;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    button {
+      flex-shrink: 0;
+    }
+
+    div {
+      flex: 1;
+    }
+  }
+
+  .form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e0e0e0;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    h3 {
+      color: #333;
+      margin: 0 0 1.5rem 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+  }
+
+  .time-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .poster-upload-section {
+    .upload-placeholder {
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      padding: 3rem 2rem;
+      text-align: center;
+      background-color: #fafafa;
+      transition: all 0.3s;
+
+      &:hover {
+        border-color: #2196f3;
+        background-color: #f5f9ff;
+      }
+
+      mat-icon {
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        color: #999;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        color: #666;
+        margin: 0.5rem 0;
+
+        &.file-hint {
+          font-size: 0.875rem;
+          color: #999;
+          margin-top: 1rem;
+        }
+      }
+
+      button {
+        margin-top: 1rem;
+      }
+    }
+
+    .image-preview {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      max-width: 500px;
+      margin: 0 auto;
+
+      img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .image-actions {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        display: flex;
+        gap: 0.5rem;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 4px;
+        padding: 0.25rem;
+      }
+    }
+  }
+
+  .info-box {
+    ul {
+      margin: 0.5rem 0 0 1.5rem;
+      padding: 0;
+
+      li {
+        margin: 0.25rem 0;
+        color: #555;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 768px) {
+  .create-event-container {
+    .time-row {
+      grid-template-columns: 1fr;
+    }
+
+    .poster-upload-section {
+      .upload-placeholder {
+        padding: 2rem 1rem;
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .create-event-container {
+    .page-header {
+      h1 {
+        font-size: 1.25rem;
+      }
+
+      .subtitle {
+        font-size: 0.875rem;
+      }
+    }
+
+    .form-section {
+      h3 {
+        font-size: 1.1rem;
+      }
+    }
+  }
+}

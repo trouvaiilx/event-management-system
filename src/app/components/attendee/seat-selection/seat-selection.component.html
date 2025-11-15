@@ -1,0 +1,184 @@
+<!-- src/app/components/attendee/seat-selection/seat-selection.component.html -->
+
+<div class="seat-selection-container">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div class="page-header">
+      <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1>Select Your Seats</h1>
+        <p class="subtitle" *ngIf="event">{{event.name}} - {{event.date | date: 'mediumDate'}}</p>
+      </div>
+    </div>
+
+    <!-- Reservation Timer -->
+    <mat-card class="timer-card" *ngIf="showTimer" [class.warning]="isTimerLow()">
+      <mat-card-content>
+        <div class="timer-content">
+          <mat-icon>schedule</mat-icon>
+          <div>
+            <h4>Reservation Time Remaining</h4>
+            <p class="timer-display">{{getTimerDisplay()}}</p>
+            <p class="timer-hint">Complete your booking before time expires</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading" class="seating-layout">
+      <!-- Stage -->
+      <div class="stage">
+        <mat-icon>theater_comedy</mat-icon>
+        <span>STAGE</span>
+      </div>
+
+      <!-- Seating Sections -->
+      <div *ngFor="let section of seatSections" class="seat-section">
+        <h3 class="section-title">{{section}} Section</h3>
+        
+        <div class="seats-container">
+          <!-- Group seats by rows -->
+          <div *ngFor="let row of getRowsInSection(section)" class="seat-row">
+            <span class="row-label">{{row}}</span>
+            <div class="seats-grid">
+              <div 
+                *ngFor="let seat of getSeatsInRow(section, row)"
+                class="seat"
+                [class]="getSeatClass(seat)"
+                (click)="toggleSeat(seat)"
+                [matTooltip]="getSeatTooltip(seat)"
+                matTooltipPosition="above"
+              >
+                <span class="seat-number">{{seat.number}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <h4>Legend</h4>
+        <div class="legend-items">
+          <div class="legend-item">
+            <div class="seat available">
+              <mat-icon>event_seat</mat-icon>
+            </div>
+            <span>Available</span>
+          </div>
+          <div class="legend-item">
+            <div class="seat selected">
+              <mat-icon>event_seat</mat-icon>
+            </div>
+            <span>Selected</span>
+          </div>
+          <div class="legend-item">
+            <div class="seat occupied">
+              <mat-icon>event_seat</mat-icon>
+            </div>
+            <span>Occupied</span>
+          </div>
+          <div class="legend-item">
+            <div class="seat reserved">
+              <mat-icon>event_seat</mat-icon>
+            </div>
+            <span>Reserved</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selection Summary -->
+    <mat-card class="selection-summary" *ngIf="!loading">
+      <mat-card-header>
+        <mat-card-title>
+          Your Selection ({{selectedSeats.length}} {{selectedSeats.length === 1 ? 'Seat' : 'Seats'}})
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="selectedSeats.length === 0" class="empty-selection">
+          <mat-icon>event_seat</mat-icon>
+          <p>No seats selected</p>
+          <p class="hint">Click on available seats to select them</p>
+        </div>
+
+        <div *ngIf="selectedSeats.length > 0" class="selected-seats-list">
+          <table mat-table [dataSource]="selectedSeats">
+            <ng-container matColumnDef="seat">
+              <th mat-header-cell *matHeaderCellDef>Seat</th>
+              <td mat-cell *matCellDef="let seat">
+                {{seat.section}} - Row {{seat.row}}, Seat {{seat.number}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="type">
+              <th mat-header-cell *matHeaderCellDef>Type</th>
+              <td mat-cell *matCellDef="let seat">{{getSeatTypeName(seat)}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef>Price</th>
+              <td mat-cell *matCellDef="let seat">${{getSeatPrice(seat).toFixed(2)}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let seat">
+                <button 
+                  mat-icon-button 
+                  color="warn"
+                  (click)="toggleSeat(seat)"
+                  matTooltip="Remove seat"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['seat', 'type', 'price', 'action']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['seat', 'type', 'price', 'action']"></tr>
+          </table>
+
+          <div class="price-summary">
+            <div class="price-row">
+              <span class="label">Subtotal:</span>
+              <span class="value">${{getTotalPrice().toFixed(2)}}</span>
+            </div>
+            <div class="price-row total">
+              <span class="label">Total:</span>
+              <span class="value">${{getTotalPrice().toFixed(2)}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="proceedToCheckout()"
+            [disabled]="selectedSeats.length === 0"
+          >
+            <mat-icon>shopping_cart</mat-icon>
+            Proceed to Checkout
+          </button>
+
+          <button 
+            mat-button 
+            (click)="clearSelection()"
+            [disabled]="selectedSeats.length === 0"
+          >
+            <mat-icon>clear_all</mat-icon>
+            Clear Selection
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

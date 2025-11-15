@@ -1,0 +1,212 @@
+<!-- src/app/components/attendee/booking-checkout/booking-checkout.component.html -->
+
+<div class="checkout-container">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div class="page-header">
+      <h1>Checkout</h1>
+      <p class="subtitle">Review your booking and proceed to payment</p>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading" class="checkout-layout">
+      <!-- Booking Details -->
+      <div class="main-section">
+        <mat-card class="event-info-card">
+          <mat-card-header>
+            <mat-card-title>Event Details</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <h2>{{event?.name}}</h2>
+            <div class="event-meta">
+              <div class="meta-item">
+                <mat-icon>calendar_today</mat-icon>
+                <span>{{event?.date | date: 'fullDate'}}</span>
+              </div>
+              <div class="meta-item">
+                <mat-icon>schedule</mat-icon>
+                <span>{{event?.startTime}}</span>
+              </div>
+              <div class="meta-item">
+                <mat-icon>location_on</mat-icon>
+                <span>{{event?.location}}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="seats-card">
+          <mat-card-header>
+            <mat-card-title>
+              Selected Seats ({{selectedSeats.length}})
+            </mat-card-title>
+            <button mat-button color="primary" (click)="editSeats()">
+              <mat-icon>edit</mat-icon>
+              Edit Seats
+            </button>
+          </mat-card-header>
+          <mat-card-content>
+            <table mat-table [dataSource]="selectedSeats">
+              <ng-container matColumnDef="seat">
+                <th mat-header-cell *matHeaderCellDef>Seat</th>
+                <td mat-cell *matCellDef="let seat">
+                  {{formatSeatLocation(seat)}}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>Type</th>
+                <td mat-cell *matCellDef="let seat">
+                  {{formatTicketType(seat.ticketType)}}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="price">
+                <th mat-header-cell *matHeaderCellDef>Price</th>
+                <td mat-cell *matCellDef="let seat">
+                  ${{seat.price.toFixed(2)}}
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="['seat', 'type', 'price']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['seat', 'type', 'price']"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="promo-card">
+          <mat-card-header>
+            <mat-card-title>Promotional Code</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="!promoApplied">
+              <p class="promo-hint">Have a promo code? Apply it to get a discount!</p>
+              <form [formGroup]="promoForm" (ngSubmit)="applyPromoCode()">
+                <div class="promo-form">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Promo Code</mat-label>
+                    <input 
+                      matInput 
+                      formControlName="promoCode"
+                      placeholder="Enter code"
+                      [disabled]="applyingPromo"
+                    >
+                    <mat-icon matPrefix>local_offer</mat-icon>
+                  </mat-form-field>
+
+                  <button 
+                    mat-raised-button 
+                    color="accent"
+                    type="submit"
+                    [disabled]="applyingPromo || promoForm.invalid"
+                  >
+                    <mat-spinner 
+                      *ngIf="applyingPromo" 
+                      diameter="20"
+                      class="button-spinner"
+                    ></mat-spinner>
+                    <span *ngIf="!applyingPromo">Apply</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div *ngIf="promoApplied" class="promo-applied">
+              <mat-icon color="primary">check_circle</mat-icon>
+              <div class="promo-info">
+                <h4>Promo Code Applied</h4>
+                <p>Code: <strong>{{appliedPromoCode}}</strong></p>
+                <p class="discount">You saved ${{discount.toFixed(2)}}</p>
+              </div>
+              <button 
+                mat-icon-button 
+                color="warn"
+                (click)="removePromoCode()"
+                matTooltip="Remove promo code"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="terms-card">
+          <mat-card-content>
+            <h4>Terms & Conditions</h4>
+            <ul>
+              <li>Tickets are non-transferable</li>
+              <li>Cancellations allowed up to 7 days before event</li>
+              <li>Refunds processed within 5-7 business days</li>
+              <li>QR code required for entry</li>
+              <li>Valid ID may be required at venue</li>
+            </ul>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Order Summary Sidebar -->
+      <div class="sidebar-section">
+        <mat-card class="summary-card sticky">
+          <mat-card-header>
+            <mat-card-title>Order Summary</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="summary-row">
+              <span class="label">Subtotal ({{selectedSeats.length}} tickets)</span>
+              <span class="value">${{subtotal.toFixed(2)}}</span>
+            </div>
+
+            <div class="summary-row discount" *ngIf="discount > 0">
+              <span class="label">Discount</span>
+              <span class="value">-${{discount.toFixed(2)}}</span>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="summary-row total">
+              <span class="label">Total</span>
+              <span class="value">${{total.toFixed(2)}}</span>
+            </div>
+
+            <button 
+              mat-raised-button 
+              color="primary" 
+              class="full-width"
+              (click)="confirmBooking()"
+              [disabled]="processing"
+            >
+              <mat-spinner 
+                *ngIf="processing" 
+                diameter="20"
+                class="button-spinner"
+              ></mat-spinner>
+              <span *ngIf="!processing">
+                <mat-icon>payment</mat-icon>
+                Proceed to Payment
+              </span>
+            </button>
+
+            <button 
+              mat-button 
+              class="full-width"
+              (click)="cancel()"
+              [disabled]="processing"
+            >
+              <mat-icon>cancel</mat-icon>
+              Cancel Booking
+            </button>
+
+            <div class="security-notice">
+              <mat-icon>lock</mat-icon>
+              <span>Secure payment powered by HELP Events</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

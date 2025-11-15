@@ -1,0 +1,239 @@
+<!-- src/app/components/attendee/payment/payment.component.html -->
+
+<div class="payment-container">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div class="page-header">
+      <h1>Payment</h1>
+      <p class="subtitle">Complete your booking by making a secure payment</p>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading && booking" class="payment-layout">
+      <!-- Payment Form -->
+      <div class="main-section">
+        <mat-card class="payment-method-card">
+          <mat-card-header>
+            <mat-card-title>Select Payment Method</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <mat-radio-group 
+              formControlName="paymentMethod"
+              class="payment-methods"
+              (change)="onPaymentMethodChange()"
+            >
+              <mat-radio-button 
+                *ngFor="let method of paymentMethods" 
+                [value]="method.value"
+                class="payment-method-option"
+              >
+                <mat-icon>{{method.icon}}</mat-icon>
+                <span>{{method.label}}</span>
+              </mat-radio-button>
+            </mat-radio-group>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="payment-details-card">
+          <mat-card-header>
+            <mat-card-title>Payment Details</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="paymentForm" (ngSubmit)="processPayment()">
+              <!-- Card Payment Fields -->
+              <div class="card-fields" *ngIf="f['paymentMethod'].value === 'CREDIT_CARD' || f['paymentMethod'].value === 'DEBIT_CARD'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Card Number</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="cardNumber"
+                    placeholder="1234 5678 9012 3456"
+                    maxlength="16"
+                    (input)="formatCardNumber()"
+                  >
+                  <mat-icon matPrefix>credit_card</mat-icon>
+                  <mat-error *ngIf="f['cardNumber'].hasError('required')">
+                    Card number is required
+                  </mat-error>
+                  <mat-error *ngIf="f['cardNumber'].hasError('pattern')">
+                    Card number must be 16 digits
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Cardholder Name</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="cardHolder"
+                    placeholder="John Doe"
+                  >
+                  <mat-icon matPrefix>person</mat-icon>
+                  <mat-error *ngIf="f['cardHolder'].hasError('required')">
+                    Cardholder name is required
+                  </mat-error>
+                </mat-form-field>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Expiry Date</mat-label>
+                    <input 
+                      matInput 
+                      formControlName="expiryDate"
+                      placeholder="MM/YY"
+                      maxlength="5"
+                      (input)="formatExpiryDate()"
+                    >
+                    <mat-icon matPrefix>date_range</mat-icon>
+                    <mat-error *ngIf="f['expiryDate'].hasError('required')">
+                      Expiry date is required
+                    </mat-error>
+                    <mat-error *ngIf="f['expiryDate'].hasError('pattern')">
+                      Format: MM/YY
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>CVV</mat-label>
+                    <input 
+                      matInput 
+                      type="password"
+                      formControlName="cvv"
+                      placeholder="123"
+                      maxlength="4"
+                    >
+                    <mat-icon matPrefix>lock</mat-icon>
+                    <mat-error *ngIf="f['cvv'].hasError('required')">
+                      CVV is required
+                    </mat-error>
+                    <mat-error *ngIf="f['cvv'].hasError('pattern')">
+                      CVV must be 3-4 digits
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <!-- Test Cards Section -->
+                <div class="test-cards-section">
+                  <button 
+                    mat-button 
+                    type="button"
+                    (click)="showTestCards = !showTestCards"
+                  >
+                    <mat-icon>{{showTestCards ? 'expand_less' : 'expand_more'}}</mat-icon>
+                    {{showTestCards ? 'Hide' : 'Show'}} Test Cards
+                  </button>
+
+                  <div *ngIf="showTestCards" class="test-cards-list">
+                    <div 
+                      *ngFor="let card of testCards" 
+                      class="test-card"
+                      (click)="useTestCard(card)"
+                    >
+                      <mat-icon>credit_card</mat-icon>
+                      <div>
+                        <strong>{{card.type}}</strong>
+                        <p>{{card.number}}</p>
+                        <p>Exp: {{card.expiry}} | CVV: {{card.cvv}}</p>
+                      </div>
+                      <button mat-icon-button type="button">
+                        <mat-icon>arrow_forward</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Other Payment Methods -->
+              <div class="other-payment" *ngIf="f['paymentMethod'].value !== 'CREDIT_CARD' && f['paymentMethod'].value !== 'DEBIT_CARD'">
+                <div class="info-message">
+                  <mat-icon>info</mat-icon>
+                  <p>{{f['paymentMethod'].value.replace('_', ' ')}} payment method is currently being processed. Please proceed with the payment.</p>
+                </div>
+              </div>
+
+              <div class="security-info">
+                <mat-icon>security</mat-icon>
+                <div>
+                  <strong>Secure Payment</strong>
+                  <p>Your payment information is encrypted and secure</p>
+                </div>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Order Summary Sidebar -->
+      <div class="sidebar-section">
+        <mat-card class="summary-card sticky">
+          <mat-card-header>
+            <mat-card-title>Order Summary</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="summary-details">
+              <div class="detail-row">
+                <span class="label">Booking ID:</span>
+                <span class="value">{{booking.id.slice(0, 12)}}...</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Tickets:</span>
+                <span class="value">{{booking.seats.length}}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Subtotal:</span>
+                <span class="value">${{booking.totalAmount.toFixed(2)}}</span>
+              </div>
+              <div class="detail-row discount" *ngIf="booking.discountAmount > 0">
+                <span class="label">Discount:</span>
+                <span class="value">-${{booking.discountAmount.toFixed(2)}}</span>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="total-row">
+              <span class="label">Total Amount</span>
+              <span class="value">${{booking.finalAmount.toFixed(2)}}</span>
+            </div>
+
+            <button 
+              mat-raised-button 
+              color="primary" 
+              class="full-width"
+              (click)="processPayment()"
+              [disabled]="processing || paymentForm.invalid"
+            >
+              <mat-spinner 
+                *ngIf="processing" 
+                diameter="20"
+                class="button-spinner"
+              ></mat-spinner>
+              <span *ngIf="!processing">
+                <mat-icon>payment</mat-icon>
+                Pay ${{booking.finalAmount.toFixed(2)}}
+              </span>
+            </button>
+
+            <button 
+              mat-button 
+              class="full-width"
+              (click)="cancel()"
+              [disabled]="processing"
+            >
+              Cancel
+            </button>
+
+            <div class="payment-badges">
+              <mat-icon>verified_user</mat-icon>
+              <mat-icon>lock</mat-icon>
+              <mat-icon>security</mat-icon>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

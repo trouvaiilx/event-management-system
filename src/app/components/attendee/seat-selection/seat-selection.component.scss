@@ -1,0 +1,390 @@
+// src/app/components/attendee/seat-selection/seat-selection.component.scss
+
+.seat-selection-container {
+  .timer-card {
+    margin-bottom: 2rem;
+    border-left: 4px solid #2196f3;
+
+    &.warning {
+      border-left-color: #f44336;
+      background-color: #ffebee;
+    }
+
+    .timer-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: #2196f3;
+      }
+
+      h4 {
+        margin: 0;
+        font-size: 1rem;
+        color: #666;
+      }
+
+      .timer-display {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2196f3;
+        margin: 0.5rem 0;
+        font-family: 'Courier New', monospace;
+      }
+
+      .timer-hint {
+        margin: 0;
+        font-size: 0.875rem;
+        color: #999;
+      }
+    }
+
+    &.warning {
+      mat-icon, .timer-display {
+        color: #f44336;
+      }
+    }
+  }
+
+  .seating-layout {
+    margin-bottom: 2rem;
+
+    .stage {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+
+      mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    .seat-section {
+      margin-bottom: 3rem;
+
+      .section-title {
+        color: #333;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .seats-container {
+        background-color: #fafafa;
+        border-radius: 8px;
+        padding: 2rem;
+      }
+
+      .seat-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+
+        .row-label {
+          font-weight: 600;
+          color: #666;
+          min-width: 30px;
+          text-align: center;
+        }
+
+        .seats-grid {
+          display: flex;
+          gap: 0.5rem;
+          flex: 1;
+          justify-content: center;
+        }
+      }
+    }
+
+    .seat {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      border: 2px solid transparent;
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+
+      .seat-number {
+        position: absolute;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: inherit;
+      }
+
+      &.available {
+        background-color: #4caf50;
+        color: white;
+
+        &:hover {
+          background-color: #45a049;
+          transform: scale(1.1);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+      }
+
+      &.selected {
+        background-color: #2196f3;
+        color: white;
+        transform: scale(1.15);
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        border-color: #1976d2;
+      }
+
+      &.occupied {
+        background-color: #f44336;
+        color: white;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      &.reserved {
+        background-color: #ff9800;
+        color: white;
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+    }
+
+    .legend {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      background-color: #fafafa;
+      border-radius: 8px;
+
+      h4 {
+        margin: 0 0 1rem 0;
+        color: #333;
+        text-align: center;
+      }
+
+      .legend-items {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+
+        .legend-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          .seat {
+            width: 32px;
+            height: 32px;
+            cursor: default;
+
+            &:hover {
+              transform: none;
+            }
+          }
+
+          span {
+            font-size: 0.9rem;
+            color: #666;
+          }
+        }
+      }
+    }
+  }
+
+  .selection-summary {
+    .empty-selection {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #999;
+
+      mat-icon {
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        color: #ccc;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        margin: 0.5rem 0;
+
+        &.hint {
+          font-size: 0.875rem;
+          color: #bbb;
+        }
+      }
+    }
+
+    .selected-seats-list {
+      .mat-mdc-table {
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+
+      .price-summary {
+        border-top: 2px solid #e0e0e0;
+        padding-top: 1rem;
+        margin-top: 1rem;
+
+        .price-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 0.5rem 1rem;
+
+          .label {
+            font-weight: 500;
+            color: #666;
+          }
+
+          .value {
+            font-weight: 600;
+            color: #333;
+          }
+
+          &.total {
+            font-size: 1.25rem;
+            padding: 1rem;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+
+            .label, .value {
+              color: #2196f3;
+            }
+          }
+        }
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+
+      button {
+        flex: 1;
+        min-width: 200px;
+      }
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 768px) {
+  .seat-selection-container {
+    .seating-layout {
+      .seat {
+        width: 32px;
+        height: 32px;
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+
+        .seat-number {
+          font-size: 0.6rem;
+        }
+      }
+
+      .seat-section {
+        .seats-container {
+          padding: 1rem;
+        }
+
+        .seat-row {
+          gap: 0.5rem;
+
+          .row-label {
+            min-width: 20px;
+            font-size: 0.875rem;
+          }
+
+          .seats-grid {
+            gap: 0.25rem;
+          }
+        }
+      }
+
+      .legend {
+        .legend-items {
+          gap: 1rem;
+        }
+      }
+    }
+
+    .selection-summary {
+      .action-buttons {
+        flex-direction: column;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .seat-selection-container {
+    .timer-card {
+      .timer-content {
+        flex-direction: column;
+        text-align: center;
+
+        .timer-display {
+          font-size: 1.5rem;
+        }
+      }
+    }
+
+    .seating-layout {
+      .seat {
+        width: 28px;
+        height: 28px;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      .stage {
+        font-size: 1rem;
+        padding: 1rem;
+
+        mat-icon {
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+        }
+      }
+    }
+  }
+}

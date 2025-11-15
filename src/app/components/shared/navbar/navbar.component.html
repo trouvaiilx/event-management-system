@@ -1,0 +1,125 @@
+<!-- src/app/components/shared/navbar/navbar.component.html -->
+
+<mat-toolbar color="primary" class="navbar">
+  <div class="navbar-content">
+    <!-- Logo/Brand -->
+    <div class="brand" (click)="navigateToDashboard()">
+      <mat-icon>event_available</mat-icon>
+      <span class="brand-text">HELP Events</span>
+    </div>
+
+    <!-- Desktop Navigation -->
+    <div class="nav-links desktop-only">
+      <a 
+        *ngFor="let link of getNavigationLinks()"
+        [routerLink]="link.route" 
+        routerLinkActive="active"
+        mat-button
+      >
+        <mat-icon>{{link.icon}}</mat-icon>
+        <span>{{link.label}}</span>
+      </a>
+    </div>
+
+    <!-- Right Side Actions -->
+    <div class="nav-actions">
+      <!-- Notifications -->
+      <button 
+        mat-icon-button 
+        [matMenuTriggerFor]="notificationMenu"
+        [matBadge]="unreadCount"
+        [matBadgeHidden]="unreadCount === 0"
+        matBadgeColor="warn"
+        matBadgeSize="small"
+      >
+        <mat-icon>notifications</mat-icon>
+      </button>
+
+      <!-- User Menu -->
+      <button mat-icon-button [matMenuTriggerFor]="userMenu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+
+      <!-- Mobile Menu -->
+      <button 
+        mat-icon-button 
+        [matMenuTriggerFor]="mobileMenu"
+        class="mobile-only"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
+
+<!-- Notification Menu -->
+<mat-menu #notificationMenu="matMenu" class="notification-menu">
+  <div class="menu-header">
+    <h3>Notifications</h3>
+    <button 
+      mat-button 
+      (click)="markAllAsRead(); $event.stopPropagation()"
+      *ngIf="unreadCount > 0"
+    >
+      Mark all as read
+    </button>
+  </div>
+
+  <div class="notifications-list">
+    <div 
+      *ngFor="let notification of unreadNotifications" 
+      class="notification-item"
+      (click)="markNotificationAsRead(notification); $event.stopPropagation()"
+    >
+      <div class="notification-icon">
+        <mat-icon [class]="notification.type.toLowerCase()">
+          {{ notification.type === 'EMAIL' ? 'email' : 
+             notification.type === 'SMS' ? 'sms' : 'notifications' }}
+        </mat-icon>
+      </div>
+      <div class="notification-content">
+        <h4>{{notification.subject}}</h4>
+        <p>{{notification.message | slice:0:60}}...</p>
+        <span class="notification-time">{{notification.sentAt | date: 'short'}}</span>
+      </div>
+    </div>
+
+    <div *ngIf="unreadCount === 0" class="no-notifications">
+      <mat-icon>notifications_none</mat-icon>
+      <p>No new notifications</p>
+    </div>
+  </div>
+</mat-menu>
+
+<!-- User Menu -->
+<mat-menu #userMenu="matMenu">
+  <div class="user-info">
+    <mat-icon class="user-avatar">account_circle</mat-icon>
+    <div>
+      <h4>{{currentUser?.fullName}}</h4>
+      <p>{{getUserRole()}}</p>
+      <p class="user-email">{{currentUser?.email}}</p>
+    </div>
+  </div>
+  <mat-divider></mat-divider>
+  <button mat-menu-item (click)="navigateToProfile()">
+    <mat-icon>settings</mat-icon>
+    <span>Change Password</span>
+  </button>
+  <button mat-menu-item (click)="logout()">
+    <mat-icon>exit_to_app</mat-icon>
+    <span>Logout</span>
+  </button>
+</mat-menu>
+
+<!-- Mobile Menu -->
+<mat-menu #mobileMenu="matMenu">
+  <button 
+    *ngFor="let link of getNavigationLinks()"
+    mat-menu-item 
+    [routerLink]="link.route"
+  >
+    <mat-icon>{{link.icon}}</mat-icon>
+    <span>{{link.label}}</span>
+  </button>
+</mat-menu>

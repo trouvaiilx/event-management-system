@@ -1,0 +1,263 @@
+<!-- src/app/components/attendee/waitlist/waitlist.component.html -->
+
+<div class="waitlist-container">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div class="page-header">
+      <h1>My Waitlist</h1>
+      <p class="subtitle">Manage your event waitlist registrations</p>
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="toggleJoinForm()"
+        *ngIf="!showJoinForm"
+      >
+        <mat-icon>add_circle</mat-icon>
+        Join Waitlist
+      </button>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <!-- Join Waitlist Form -->
+    <mat-card class="join-form" *ngIf="showJoinForm && !loading">
+      <mat-card-header>
+        <mat-card-title>Join Event Waitlist</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="joinForm" (ngSubmit)="joinWaitlist()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Select Event</mat-label>
+            <mat-select formControlName="eventId" required>
+              <mat-option *ngFor="let event of availableEvents" [value]="event.id">
+                {{event.name}} - {{event.date | date: 'mediumDate'}}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>event</mat-icon>
+            <mat-error *ngIf="f['eventId'].hasError('required')">
+              Please select an event
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Ticket Type</mat-label>
+            <mat-select formControlName="ticketType" required>
+              <mat-option *ngFor="let type of ticketTypes" [value]="type">
+                {{formatTicketType(type)}}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>style</mat-icon>
+            <mat-error *ngIf="f['ticketType'].hasError('required')">
+              Please select a ticket type
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Quantity</mat-label>
+            <input 
+              matInput 
+              type="number" 
+              formControlName="quantity"
+              min="1"
+              max="10"
+              required
+            >
+            <mat-icon matPrefix>confirmation_number</mat-icon>
+            <mat-error *ngIf="f['quantity'].hasError('required')">
+              Quantity is required
+            </mat-error>
+            <mat-error *ngIf="f['quantity'].hasError('min')">
+              Minimum 1 ticket
+            </mat-error>
+            <mat-error *ngIf="f['quantity'].hasError('max')">
+              Maximum 10 tickets
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input 
+              matInput 
+              type="email" 
+              formControlName="email"
+              required
+            >
+            <mat-icon matPrefix>email</mat-icon>
+            <mat-error *ngIf="f['email'].hasError('required')">
+              Email is required
+            </mat-error>
+            <mat-error *ngIf="f['email'].hasError('email')">
+              Please enter a valid email
+            </mat-error>
+            <mat-hint>We'll notify you when tickets become available</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Phone Number</mat-label>
+            <input 
+              matInput 
+              type="tel" 
+              formControlName="phoneNumber"
+              required
+            >
+            <mat-icon matPrefix>phone</mat-icon>
+            <mat-error *ngIf="f['phoneNumber'].hasError('required')">
+              Phone number is required
+            </mat-error>
+            <mat-error *ngIf="f['phoneNumber'].hasError('pattern')">
+              Please enter a valid phone number
+            </mat-error>
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button 
+              mat-raised-button 
+              color="primary" 
+              type="submit"
+              [disabled]="joining || joinForm.invalid"
+            >
+              <mat-spinner 
+                *ngIf="joining" 
+                diameter="20"
+                class="button-spinner"
+              ></mat-spinner>
+              <span *ngIf="!joining">
+                <mat-icon>add</mat-icon>
+                Join Waitlist
+              </span>
+            </button>
+
+            <button 
+              mat-button 
+              type="button"
+              (click)="toggleJoinForm()"
+              [disabled]="joining"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Waitlist Items -->
+    <div *ngIf="!loading">
+      <div *ngIf="myWaitlists.length === 0 && !showJoinForm" class="empty-state">
+        <mat-icon>schedule</mat-icon>
+        <h3>No Waitlist Registrations</h3>
+        <p>You haven't joined any event waitlists yet.</p>
+        <button mat-raised-button color="primary" (click)="toggleJoinForm()">
+          <mat-icon>add_circle</mat-icon>
+          Join Your First Waitlist
+        </button>
+      </div>
+
+      <div class="waitlist-grid" *ngIf="myWaitlists.length > 0">
+        <mat-card *ngFor="let waitlist of myWaitlists" class="waitlist-card">
+          <mat-card-header>
+            <mat-card-title>
+              {{getEvent(waitlist.eventId)?.name || 'Event'}}
+            </mat-card-title>
+            <mat-chip [color]="getStatusColor(waitlist.status)" selected>
+              {{waitlist.status}}
+            </mat-chip>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="waitlist-info">
+              <div class="info-row">
+                <mat-icon>calendar_today</mat-icon>
+                <div>
+                  <span class="label">Event Date</span>
+                  <span class="value">{{formatDate(getEvent(waitlist.eventId)?.date)}}</span>
+                </div>
+              </div>
+
+              <div class="info-row">
+                <mat-icon>style</mat-icon>
+                <div>
+                  <span class="label">Ticket Type</span>
+                  <span class="value">{{formatTicketType(waitlist.ticketType)}}</span>
+                </div>
+              </div>
+
+              <div class="info-row">
+                <mat-icon>confirmation_number</mat-icon>
+                <div>
+                  <span class="label">Quantity</span>
+                  <span class="value">{{waitlist.quantity}} {{waitlist.quantity === 1 ? 'ticket' : 'tickets'}}</span>
+                </div>
+              </div>
+
+              <div class="info-row">
+                <mat-icon>schedule</mat-icon>
+                <div>
+                  <span class="label">Joined</span>
+                  <span class="value">{{waitlist.joinedAt | date: 'medium'}}</span>
+                </div>
+              </div>
+
+              <div class="info-row" *ngIf="waitlist.notifiedAt">
+                <mat-icon>notifications_active</mat-icon>
+                <div>
+                  <span class="label">Notified</span>
+                  <span class="value">{{waitlist.notifiedAt | date: 'medium'}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="notification-info" *ngIf="waitlist.status === 'NOTIFIED'">
+              <mat-icon>info</mat-icon>
+              <div>
+                <strong>Tickets Available!</strong>
+                <p>You have been notified that tickets are now available. Please book within 24 hours.</p>
+              </div>
+            </div>
+
+            <div class="waiting-info" *ngIf="waitlist.status === 'WAITING'">
+              <mat-icon>hourglass_empty</mat-icon>
+              <div>
+                <p>You're on the waitlist. We'll notify you when tickets become available.</p>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button 
+              mat-button 
+              color="primary"
+              (click)="getWaitlistPosition(waitlist.id)"
+              *ngIf="waitlist.status === 'WAITING'"
+            >
+              <mat-icon>info</mat-icon>
+              Check Position
+            </button>
+
+            <button 
+              mat-raised-button 
+              color="primary"
+              [routerLink]="['/attendee/event', waitlist.eventId]"
+              *ngIf="waitlist.status === 'NOTIFIED'"
+            >
+              <mat-icon>shopping_cart</mat-icon>
+              Book Now
+            </button>
+
+            <button 
+              mat-button 
+              color="warn"
+              (click)="leaveWaitlist(waitlist.id)"
+              *ngIf="waitlist.status === 'WAITING' || waitlist.status === 'NOTIFIED'"
+            >
+              <mat-icon>cancel</mat-icon>
+              Leave Waitlist
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

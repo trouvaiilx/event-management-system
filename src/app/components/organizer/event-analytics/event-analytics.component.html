@@ -1,0 +1,258 @@
+<!-- src/app/components/organizer/event-analytics/event-analytics.component.html -->
+
+<div class="analytics-container">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div class="page-header">
+      <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1>Event Analytics</h1>
+        <p class="subtitle" *ngIf="event">{{event.name}}</p>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading">
+      <!-- Controls -->
+      <mat-card class="controls-card">
+        <mat-card-content>
+          <div class="controls">
+            <mat-form-field appearance="outline">
+              <mat-label>Period</mat-label>
+              <mat-select [(value)]="period" (selectionChange)="onPeriodChange()">
+                <mat-option value="daily">Daily</mat-option>
+                <mat-option value="weekly">Weekly</mat-option>
+                <mat-option value="monthly">Monthly</mat-option>
+              </mat-select>
+              <mat-icon matPrefix>date_range</mat-icon>
+            </mat-form-field>
+
+            <div class="download-buttons">
+              <button 
+                mat-raised-button 
+                color="primary"
+                (click)="downloadTicketSalesReport()"
+                [disabled]="!ticketSalesReport"
+              >
+                <mat-icon>download</mat-icon>
+                Download Sales Report
+              </button>
+
+              <button 
+                mat-raised-button 
+                color="accent"
+                (click)="downloadOccupancyReport()"
+                [disabled]="!occupancyReport"
+              >
+                <mat-icon>download</mat-icon>
+                Download Occupancy Report
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Summary Stats -->
+      <div class="stats-grid" *ngIf="ticketSalesReport">
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon sales">
+              <mat-icon>confirmation_number</mat-icon>
+            </div>
+            <div class="stat-info">
+              <h3>{{ticketSalesReport.totalTicketsSold}}</h3>
+              <p>Total Tickets Sold</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon revenue">
+              <mat-icon>attach_money</mat-icon>
+            </div>
+            <div class="stat-info">
+              <h3>${{ticketSalesReport.totalRevenue.toFixed(2)}}</h3>
+              <p>Total Revenue</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon average">
+              <mat-icon>trending_up</mat-icon>
+            </div>
+            <div class="stat-info">
+              <h3>${{ticketSalesReport.averageTicketPrice.toFixed(2)}}</h3>
+              <p>Average Ticket Price</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card" *ngIf="occupancyReport">
+          <mat-card-content>
+            <div class="stat-icon occupancy">
+              <mat-icon>event_seat</mat-icon>
+            </div>
+            <div class="stat-info">
+              <h3>{{occupancyReport.occupancyRate.toFixed(1)}}%</h3>
+              <p>Occupancy Rate</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Ticket Sales Charts -->
+      <div class="charts-grid" *ngIf="ticketSalesReport">
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Tickets Sold by Type</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <canvas 
+              baseChart
+              [data]="salesChartData"
+              [options]="salesChartOptions"
+              [type]="'bar'"
+            ></canvas>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Revenue Distribution</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <canvas 
+              baseChart
+              [data]="revenueChartData"
+              [options]="revenueChartOptions"
+              [type]="'doughnut'"
+            ></canvas>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Ticket Sales Details Table -->
+      <mat-card class="details-card" *ngIf="ticketSalesReport">
+        <mat-card-header>
+          <mat-card-title>Sales Breakdown</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <table mat-table [dataSource]="ticketSalesReport.ticketsByType">
+            <ng-container matColumnDef="type">
+              <th mat-header-cell *matHeaderCellDef>Ticket Type</th>
+              <td mat-cell *matCellDef="let item">{{formatTicketType(item.type)}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef>Quantity Sold</th>
+              <td mat-cell *matCellDef="let item">{{item.quantity}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="revenue">
+              <th mat-header-cell *matHeaderCellDef>Revenue</th>
+              <td mat-cell *matCellDef="let item">${{item.revenue.toFixed(2)}}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['type', 'quantity', 'revenue']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['type', 'quantity', 'revenue']"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Occupancy Report -->
+      <div class="occupancy-section" *ngIf="occupancyReport">
+        <mat-card class="chart-card full-width">
+          <mat-card-header>
+            <mat-card-title>Seat Occupancy by Section</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <canvas 
+              baseChart
+              [data]="occupancyChartData"
+              [options]="occupancyChartOptions"
+              [type]="'bar'"
+            ></canvas>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="details-card">
+          <mat-card-header>
+            <mat-card-title>Occupancy Details</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="occupancy-summary">
+              <div class="summary-item">
+                <span class="label">Total Seats:</span>
+                <span class="value">{{occupancyReport.totalSeats}}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">Occupied:</span>
+                <span class="value">{{occupancyReport.occupiedSeats}}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">Available:</span>
+                <span class="value">{{occupancyReport.totalSeats - occupancyReport.occupiedSeats}}</span>
+              </div>
+              <div class="summary-item highlight">
+                <span class="label">Occupancy Rate:</span>
+                <span class="value">{{occupancyReport.occupancyRate.toFixed(2)}}%</span>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <table mat-table [dataSource]="occupancyReport.occupancyBySection" class="section-table">
+              <ng-container matColumnDef="section">
+                <th mat-header-cell *matHeaderCellDef>Section</th>
+                <td mat-cell *matCellDef="let item">{{formatSection(item.section)}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="total">
+                <th mat-header-cell *matHeaderCellDef>Total Seats</th>
+                <td mat-cell *matCellDef="let item">{{item.total}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="occupied">
+                <th mat-header-cell *matHeaderCellDef>Occupied</th>
+                <td mat-cell *matCellDef="let item">{{item.occupied}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="rate">
+                <th mat-header-cell *matHeaderCellDef>Occupancy</th>
+                <td mat-cell *matCellDef="let item">
+                  <div class="progress-cell">
+                    <mat-progress-bar 
+                      mode="determinate" 
+                      [value]="item.rate"
+                      [color]="item.rate > 80 ? 'accent' : item.rate > 50 ? 'primary' : 'warn'"
+                    ></mat-progress-bar>
+                    <span>{{item.rate.toFixed(1)}}%</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="['section', 'total', 'occupied', 'rate']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['section', 'total', 'occupied', 'rate']"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!ticketSalesReport && !loading" class="empty-state">
+        <mat-icon>assessment</mat-icon>
+        <h3>No Data Available</h3>
+        <p>Analytics data will appear here once tickets are sold.</p>
+      </div>
+    </div>
+  </div>
+</div>

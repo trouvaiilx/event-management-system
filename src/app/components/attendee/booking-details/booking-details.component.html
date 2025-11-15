@@ -1,0 +1,238 @@
+<!-- src/app/components/attendee/booking-details/booking-details.component.html -->
+
+<div class="booking-details-container">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div class="page-header">
+      <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1>Booking Details</h1>
+        <p class="subtitle">Your booking confirmation</p>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading && booking && event" class="details-layout">
+      <!-- Main Content -->
+      <div class="main-section">
+        <!-- Status Card -->
+        <mat-card class="status-card" [class]="booking.status.toLowerCase()">
+          <mat-card-content>
+            <div class="status-content">
+              <mat-icon>{{booking.status === 'CONFIRMED' ? 'check_circle' : booking.status === 'CHECKED_IN' ? 'verified' : 'cancel'}}</mat-icon>
+              <div>
+                <h3>Booking {{booking.status}}</h3>
+                <p *ngIf="booking.status === 'CONFIRMED'">Your booking is confirmed and ready for the event</p>
+                <p *ngIf="booking.status === 'CHECKED_IN'">You have checked in to this event</p>
+                <p *ngIf="booking.status === 'CANCELLED'">This booking has been cancelled</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Event Details -->
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Event Information</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <h2>{{event.name}}</h2>
+            <p class="event-description">{{event.description}}</p>
+            
+            <div class="event-info-grid">
+              <div class="info-item">
+                <mat-icon>calendar_today</mat-icon>
+                <div>
+                  <span class="label">Date</span>
+                  <span class="value">{{formatDate(event.date)}}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>schedule</mat-icon>
+                <div>
+                  <span class="label">Time</span>
+                  <span class="value">{{formatTime(event.startTime)}} - {{formatTime(event.endTime)}}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>location_on</mat-icon>
+                <div>
+                  <span class="label">Location</span>
+                  <span class="value">{{event.location}}</span>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Booking Information -->
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Booking Information</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="booking-info">
+              <div class="info-row">
+                <span class="label">Booking ID:</span>
+                <span class="value">{{booking.id}}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">Booking Date:</span>
+                <span class="value">{{booking.createdAt | date: 'medium'}}</span>
+              </div>
+              <div class="info-row" *ngIf="booking.promoCode">
+                <span class="label">Promo Code Used:</span>
+                <span class="value promo">{{booking.promoCode}}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Seat Details -->
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Your Seats ({{booking.seats.length}})</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <table mat-table [dataSource]="booking.seats">
+              <ng-container matColumnDef="seat">
+                <th mat-header-cell *matHeaderCellDef>Seat Location</th>
+                <td mat-cell *matCellDef="let seat">{{formatSeatLocation(seat)}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>Ticket Type</th>
+                <td mat-cell *matCellDef="let seat">{{formatTicketType(seat.ticketType)}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="price">
+                <th mat-header-cell *matHeaderCellDef>Price</th>
+                <td mat-cell *matCellDef="let seat">${{seat.price.toFixed(2)}}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="['seat', 'type', 'price']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['seat', 'type', 'price']"></tr>
+            </table>
+
+            <div class="price-summary">
+              <div class="price-row">
+                <span>Subtotal:</span>
+                <span>${{booking.totalAmount.toFixed(2)}}</span>
+              </div>
+              <div class="price-row discount" *ngIf="booking.discountAmount > 0">
+                <span>Discount:</span>
+                <span>-${{booking.discountAmount.toFixed(2)}}</span>
+              </div>
+              <div class="price-row total">
+                <span>Total Paid:</span>
+                <span>${{booking.finalAmount.toFixed(2)}}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Important Information -->
+        <mat-card class="info-card">
+          <mat-card-content>
+            <h4><mat-icon>info</mat-icon> Important Information</h4>
+            <ul>
+              <li>Please arrive at least 30 minutes before the event starts</li>
+              <li>Bring a valid photo ID for verification</li>
+              <li>Present your QR code at the entrance for check-in</li>
+              <li>Seats are reserved and cannot be changed</li>
+              <li *ngIf="canCancelBooking()">You can cancel this booking up to 7 days before the event</li>
+              <li *ngIf="!canCancelBooking() && booking.status === 'CONFIRMED'">Cancellation is no longer available (less than 7 days to event)</li>
+            </ul>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- QR Code Sidebar -->
+      <div class="sidebar-section">
+        <mat-card class="qr-card sticky" *ngIf="booking.status === 'CONFIRMED' && booking.qrCode">
+          <mat-card-header>
+            <mat-card-title>Your Ticket</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="qr-code-container" #qrCodeElement>
+              <qrcode 
+                [qrdata]="booking.qrCode" 
+                [width]="256" 
+                [errorCorrectionLevel]="'M'"
+                [colorDark]="'#000000'"
+                [colorLight]="'#ffffff'"
+              ></qrcode>
+            </div>
+
+            <div class="qr-instructions">
+              <mat-icon>qr_code_scanner</mat-icon>
+              <p>Show this QR code at the entrance</p>
+            </div>
+
+            <button 
+              mat-raised-button 
+              color="primary" 
+              class="full-width"
+              (click)="downloadTicket()"
+            >
+              <mat-icon>download</mat-icon>
+              Download Ticket PDF
+            </button>
+
+            <button 
+              mat-raised-button 
+              color="warn"
+              class="full-width"
+              *ngIf="canCancelBooking()"
+              (click)="cancelBooking()"
+              [disabled]="cancelling"
+            >
+              <mat-spinner 
+                *ngIf="cancelling" 
+                diameter="20"
+                class="button-spinner"
+              ></mat-spinner>
+              <span *ngIf="!cancelling">
+                <mat-icon>cancel</mat-icon>
+                Cancel Booking
+              </span>
+            </button>
+
+            <div class="help-section">
+              <mat-icon>help_outline</mat-icon>
+              <div>
+                <strong>Need Help?</strong>
+                <p>Contact support if you have any questions about your booking</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="cancelled-info" *ngIf="booking.status === 'CANCELLED'">
+          <mat-card-content>
+            <mat-icon>info</mat-icon>
+            <h4>Booking Cancelled</h4>
+            <p>Your refund of ${{booking.finalAmount.toFixed(2)}} will be processed within 5-7 business days.</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="checked-in-info" *ngIf="booking.status === 'CHECKED_IN'">
+          <mat-card-content>
+            <mat-icon>verified</mat-icon>
+            <h4>Checked In</h4>
+            <p>You checked in at: {{booking.checkedInAt | date: 'medium'}}</p>
+            <p>Enjoy the event!</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

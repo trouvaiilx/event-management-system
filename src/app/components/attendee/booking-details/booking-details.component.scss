@@ -1,0 +1,337 @@
+// src/app/components/attendee/booking-details/booking-details.component.scss
+
+.booking-details-container {
+  .details-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+    align-items: start;
+
+    .sidebar-section {
+      .sticky {
+        position: sticky;
+        top: 80px;
+      }
+    }
+  }
+
+  .status-card {
+    border-left: 4px solid;
+    margin-bottom: 2rem;
+
+    &.confirmed {
+      border-left-color: #4caf50;
+      background-color: #f1f8f4;
+    }
+
+    &.checked_in {
+      border-left-color: #2196f3;
+      background-color: #e3f2fd;
+    }
+
+    &.cancelled {
+      border-left-color: #f44336;
+      background-color: #ffebee;
+    }
+
+    .status-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      p {
+        margin: 0.5rem 0 0 0;
+        color: #666;
+      }
+    }
+
+    &.confirmed mat-icon {
+      color: #4caf50;
+    }
+
+    &.checked_in mat-icon {
+      color: #2196f3;
+    }
+
+    &.cancelled mat-icon {
+      color: #f44336;
+    }
+  }
+
+  .event-description {
+    color: #666;
+    line-height: 1.6;
+    margin: 1rem 0;
+  }
+
+  .event-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+
+    .info-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+
+      mat-icon {
+        color: #2196f3;
+        margin-top: 0.25rem;
+      }
+
+      div {
+        display: flex;
+        flex-direction: column;
+
+        .label {
+          font-size: 0.875rem;
+          color: #999;
+          margin-bottom: 0.25rem;
+        }
+
+        .value {
+          font-weight: 600;
+          color: #333;
+        }
+      }
+    }
+  }
+
+  .booking-info {
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .label {
+        color: #666;
+      }
+
+      .value {
+        font-weight: 600;
+        color: #333;
+        font-family: 'Courier New', monospace;
+
+        &.promo {
+          color: #4caf50;
+          background-color: #e8f5e9;
+          padding: 0.25rem 0.75rem;
+          border-radius: 4px;
+        }
+      }
+    }
+  }
+
+  .mat-mdc-table {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .price-summary {
+    border-top: 2px solid #e0e0e0;
+    padding-top: 1rem;
+    margin-top: 1rem;
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+
+      &.discount {
+        color: #4caf50;
+      }
+
+      &.total {
+        background-color: #f5f5f5;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2196f3;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+      }
+    }
+  }
+
+  .info-card {
+    h4 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0 0 1rem 0;
+      color: #333;
+
+      mat-icon {
+        color: #2196f3;
+      }
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.5rem;
+
+      li {
+        margin: 0.75rem 0;
+        color: #666;
+        line-height: 1.6;
+      }
+    }
+  }
+
+  .qr-card {
+    .qr-code-container {
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .qr-instructions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      background-color: #e3f2fd;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+
+      mat-icon {
+        color: #2196f3;
+      }
+
+      p {
+        margin: 0;
+        color: #1976d2;
+        font-weight: 600;
+      }
+    }
+
+    button.full-width {
+      width: 100%;
+      margin: 0.5rem 0;
+    }
+
+    .help-section {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+
+      mat-icon {
+        color: #666;
+      }
+
+      div {
+        strong {
+          display: block;
+          color: #333;
+          margin-bottom: 0.25rem;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.875rem;
+          color: #666;
+        }
+      }
+    }
+  }
+
+  .cancelled-info,
+  .checked-in-info {
+    text-align: center;
+    padding: 2rem;
+
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      margin-bottom: 1rem;
+    }
+
+    h4 {
+      margin: 0 0 1rem 0;
+      color: #333;
+    }
+
+    p {
+      margin: 0.5rem 0;
+      color: #666;
+    }
+  }
+
+  .cancelled-info {
+    mat-icon {
+      color: #f44336;
+    }
+  }
+
+  .checked-in-info {
+    mat-icon {
+      color: #4caf50;
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 968px) {
+  .booking-details-container {
+    .details-layout {
+      grid-template-columns: 1fr;
+
+      .sidebar-section {
+        order: -1;
+
+        .sticky {
+          position: static;
+        }
+      }
+    }
+
+    .event-info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .booking-details-container {
+    .status-card {
+      .status-content {
+        flex-direction: column;
+        text-align: center;
+
+        h3 {
+          font-size: 1.25rem;
+        }
+      }
+    }
+
+    .qr-card {
+      .qr-code-container {
+        padding: 1rem;
+      }
+    }
+  }
+}

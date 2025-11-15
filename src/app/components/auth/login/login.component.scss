@@ -1,0 +1,159 @@
+// src/app/components/auth/login/login.component.scss
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+
+  .login-card {
+    width: 100%;
+    max-width: 450px;
+
+    mat-card {
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+      mat-card-header {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+
+        mat-card-title {
+          text-align: center;
+
+          h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 0.5rem 0;
+          }
+
+          .subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin: 0;
+          }
+        }
+      }
+
+      mat-card-content {
+        h2 {
+          text-align: center;
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #333;
+          margin: 0 0 1.5rem 0;
+        }
+
+        form {
+          .full-width {
+            width: 100%;
+            margin-bottom: 1rem;
+          }
+
+          .submit-button {
+            height: 48px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            position: relative;
+
+            .button-spinner {
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              transform: translate(-50%, -50%);
+            }
+          }
+        }
+
+        .form-footer {
+          margin-top: 1.5rem;
+          text-align: center;
+
+          p {
+            color: #666;
+            margin: 0.5rem 0;
+
+            .link {
+              color: #667eea;
+              cursor: pointer;
+              text-decoration: none;
+              font-weight: 600;
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+
+          .demo-credentials {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: left;
+
+            .demo-title {
+              font-weight: 600;
+              color: #333;
+              margin: 0 0 0.5rem 0;
+            }
+
+            .credential-item {
+              font-size: 0.875rem;
+              color: #555;
+              margin: 0.25rem 0;
+              font-family: 'Courier New', monospace;
+
+              strong {
+                color: #333;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 600px) {
+  .login-container {
+    padding: 10px;
+
+    .login-card {
+      mat-card {
+        padding: 1.5rem;
+
+        mat-card-header {
+          mat-card-title {
+            h1 {
+              font-size: 1.5rem;
+            }
+
+            .subtitle {
+              font-size: 0.875rem;
+            }
+          }
+        }
+
+        mat-card-content {
+          h2 {
+            font-size: 1.25rem;
+          }
+
+          .demo-credentials {
+            .credential-item {
+              font-size: 0.75rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
