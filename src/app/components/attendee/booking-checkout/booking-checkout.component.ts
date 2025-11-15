@@ -1,16 +1,44 @@
 // src/app/components/attendee/booking-checkout/booking-checkout.component.ts
 
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { BookingService } from '../../../services/booking.service';
 import { EventService } from '../../../services/event.service';
 import { AuthService } from '../../../services/auth.service';
 import { BookingSeat, Event } from '../../../models/models';
 
+import { NavbarComponent } from '../../shared/navbar/navbar.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 @Component({
   selector: 'app-booking-checkout',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    NavbarComponent,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    MatDividerModule,
+    MatTooltipModule,
+    MatSnackBarModule,
+  ],
   templateUrl: './booking-checkout.component.html',
   styleUrls: ['./booking-checkout.component.scss'],
 })

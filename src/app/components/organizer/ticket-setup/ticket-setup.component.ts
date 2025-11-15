@@ -1,15 +1,42 @@
 // src/app/components/organizer/ticket-setup/ticket-setup.component.ts
 
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+
+import { NavbarComponent } from '../../shared/navbar/navbar.component';
 import { EventService } from '../../../services/event.service';
 import { Event, TicketCategory, TicketType, SeatSection } from '../../../models/models';
 
 @Component({
   selector: 'app-ticket-setup',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatIconModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatChipsModule,
+    MatSnackBarModule,
+    MatDialogModule,
+    NavbarComponent,
+  ],
   templateUrl: './ticket-setup.component.html',
   styleUrls: ['./ticket-setup.component.scss'],
 })

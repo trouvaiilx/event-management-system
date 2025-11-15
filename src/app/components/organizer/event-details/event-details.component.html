@@ -1,0 +1,83 @@
+<!-- src/app/components/organizer/event-details/event-details.component.html -->
+<div class="event-details-container">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div class="page-header">
+      <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1>Event Details</h1>
+        <p class="subtitle" *ngIf="event">{{event.name}}</p>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading && event">
+      <mat-card>
+        <mat-card-content>
+          <h2>{{event.name}}</h2>
+          <p>{{event.description}}</p>
+          <p><strong>Date:</strong> {{event.date | date: 'fullDate'}}</p>
+          <p><strong>Time:</strong> {{event.startTime}} - {{event.endTime}}</p>
+          <p><strong>Location:</strong> {{event.location}}</p>
+          <p><strong>Status:</strong> {{event.status}}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" (click)="navigateToTickets()">
+            <mat-icon>confirmation_number</mat-icon>
+            Manage Tickets
+          </button>
+          <button mat-raised-button color="accent" (click)="navigateToPromos()">
+            <mat-icon>local_offer</mat-icon>
+            Promo Codes
+          </button>
+          <button mat-raised-button (click)="navigateToAnalytics()">
+            <mat-icon>assessment</mat-icon>
+            Analytics
+          </button>
+        </div>
+      </div>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Ticket Categories</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="ticketCategories.length === 0" class="empty-state">
+            <mat-icon>confirmation_number</mat-icon>
+            <p>No ticket categories configured</p>
+          </div>
+
+          <table mat-table [dataSource]="ticketCategories" *ngIf="ticketCategories.length > 0">
+            <ng-container matColumnDef="type">
+              <th mat-header-cell *matHeaderCellDef>Type</th>
+              <td mat-cell *matCellDef="let cat">{{cat.type}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef>Price</th>
+              <td mat-cell *matCellDef="let cat">${{cat.price}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef>Available</th>
+              <td mat-cell *matCellDef="let cat">{{cat.availableQuantity}}/{{cat.quantity}}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['type', 'price', 'quantity']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['type', 'price', 'quantity']"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

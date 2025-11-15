@@ -1,0 +1,89 @@
+<!-- src/app/components/attendee/attendee-dashboard/attendee-dashboard.component.html -->
+<div class="dashboard-container">
+  <app-navbar></app-navbar>
+
+  <div class="dashboard-content">
+    <div class="page-header">
+      <h1>Welcome back, {{currentUser?.fullName}}!</h1>
+      <p class="subtitle">Discover and book tickets for upcoming events</p>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading">
+      <div class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" (click)="navigateToBrowseEvents()">
+            <mat-icon>explore</mat-icon>
+            Browse Events
+          </button>
+          <button mat-raised-button color="accent" (click)="navigateToMyBookings()">
+            <mat-icon>confirmation_number</mat-icon>
+            My Bookings
+          </button>
+        </div>
+      </div>
+
+      <mat-card class="recent-section">
+        <mat-card-header>
+          <mat-card-title>Upcoming Events</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="upcomingEvents.length === 0" class="empty-state">
+            <mat-icon>event_busy</mat-icon>
+            <p>No upcoming events available</p>
+          </div>
+
+          <div class="events-grid" *ngIf="upcomingEvents.length > 0">
+            <mat-card *ngFor="let event of upcomingEvents" class="event-card" (click)="viewEvent(event.id)">
+              <mat-card-content>
+                <h3>{{event.name}}</h3>
+                <p>{{event.date | date: 'mediumDate'}}</p>
+                <button mat-button color="primary">View Details</button>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="recent-section">
+        <mat-card-header>
+          <mat-card-title>Recent Bookings</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="recentBookings.length === 0" class="empty-state">
+            <mat-icon>inbox</mat-icon>
+            <p>No bookings yet</p>
+          </div>
+
+          <table mat-table [dataSource]="recentBookings" *ngIf="recentBookings.length > 0">
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>Booking ID</th>
+              <td mat-cell *matCellDef="let booking">{{booking.id.slice(0, 12)}}...</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let booking">
+                <mat-chip>{{booking.status}}</mat-chip>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let booking">
+                <button mat-button color="primary" (click)="viewBooking(booking.id)">View</button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['id', 'status', 'action']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['id', 'status', 'action']"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

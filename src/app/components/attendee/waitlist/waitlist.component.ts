@@ -1,16 +1,45 @@
 // src/app/components/attendee/waitlist/waitlist.component.ts
 
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { WaitlistService } from '../../../services/waitlist.service';
 import { EventService } from '../../../services/event.service';
 import { AuthService } from '../../../services/auth.service';
 import { Waitlist, Event, TicketType } from '../../../models/models';
 
+import { NavbarComponent } from '../../shared/navbar/navbar.component';
+import { RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+
 @Component({
   selector: 'app-waitlist',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    NavbarComponent,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatChipsModule,
+    MatSnackBarModule,
+    MatDialogModule,
+  ],
   templateUrl: './waitlist.component.html',
   styleUrls: ['./waitlist.component.scss'],
 })
@@ -202,7 +231,8 @@ export class WaitlistComponent implements OnInit {
     return this.events.get(eventId);
   }
 
-  formatDate(date: Date): string {
+  formatDate(date?: Date | null): string {
+    if (!date) return '';
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',

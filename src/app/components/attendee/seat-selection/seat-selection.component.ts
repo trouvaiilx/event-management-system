@@ -1,15 +1,36 @@
 // src/app/components/attendee/seat-selection/seat-selection.component.ts
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { EventService } from '../../../services/event.service';
 import { AuthService } from '../../../services/auth.service';
 import { Seat, TicketCategory, Event, BookingSeat } from '../../../models/models';
 import { interval, Subscription } from 'rxjs';
 
+import { NavbarComponent } from '../../shared/navbar/navbar.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTableModule } from '@angular/material/table';
+
 @Component({
   selector: 'app-seat-selection',
+  standalone: true,
+  imports: [
+    CommonModule,
+    NavbarComponent,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    MatTableModule,
+    MatSnackBarModule,
+  ],
   templateUrl: './seat-selection.component.html',
   styleUrls: ['./seat-selection.component.scss'],
 })

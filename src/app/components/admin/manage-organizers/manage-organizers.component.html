@@ -1,0 +1,67 @@
+<!-- src/app/components/admin/manage-organizers/manage-organizers.component.html -->
+<div class="manage-organizers-container">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div class="page-header">
+      <h1>Manage Organizers</h1>
+      <p class="subtitle">View and manage event organizers</p>
+      <button mat-raised-button color="primary" (click)="registerNew()">
+        <mat-icon>person_add</mat-icon>
+        Register New Organizer
+      </button>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <mat-card *ngIf="!loading">
+      <mat-card-content>
+        <table mat-table [dataSource]="organizers">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let org">{{org.fullName}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let org">{{org.email}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="organization">
+            <th mat-header-cell *matHeaderCellDef>Organization</th>
+            <td mat-cell *matCellDef="let org">{{org.organizationName || 'N/A'}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let org">
+              <mat-chip [class.active]="org.isActive" [class.inactive]="!org.isActive">
+                {{org.isActive ? 'Active' : 'Inactive'}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let org">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="toggleStatus(org)">
+                  <mat-icon>{{org.isActive ? 'block' : 'check_circle'}}</mat-icon>
+                  <span>{{org.isActive ? 'Deactivate' : 'Activate'}}</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

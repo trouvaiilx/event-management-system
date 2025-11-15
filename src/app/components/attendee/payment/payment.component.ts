@@ -1,16 +1,42 @@
 // src/app/components/attendee/payment/payment.component.ts
 
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { PaymentService } from '../../../services/payment.service';
 import { BookingService } from '../../../services/booking.service';
 import { QrCodeService } from '../../../services/qr-code.service';
 import { Booking, PaymentMethod } from '../../../models/models';
 
+import { NavbarComponent } from '../../shared/navbar/navbar.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatDividerModule } from '@angular/material/divider';
+
 @Component({
   selector: 'app-payment',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    NavbarComponent,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatRadioModule,
+    MatDividerModule,
+    MatSnackBarModule,
+  ],
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.scss'],
 })

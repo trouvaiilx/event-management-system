@@ -1,16 +1,40 @@
 // src/app/components/attendee/booking-details/booking-details.component.ts
 
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BookingService } from '../../../services/booking.service';
 import { EventService } from '../../../services/event.service';
 import { PdfService } from '../../../services/pdf.service';
 import { Booking, Event } from '../../../models/models';
 
+import { NavbarComponent } from '../../shared/navbar/navbar.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDividerModule } from '@angular/material/divider';
+import { QRCodeComponent } from 'angularx-qrcode';
+
 @Component({
   selector: 'app-booking-details',
+  standalone: true,
+  imports: [
+    CommonModule,
+    NavbarComponent,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatDividerModule,
+    MatSnackBarModule,
+    MatDialogModule,
+    QRCodeComponent,
+  ],
   templateUrl: './booking-details.component.html',
   styleUrls: ['./booking-details.component.scss'],
 })

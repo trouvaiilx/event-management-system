@@ -1,12 +1,15 @@
-// src/app/app.module.ts
+// Legacy AppModule removed. Project uses standalone bootstrap in `src/main.ts`.
+// Keeping this file as a small marker to avoid accidental imports from tooling.
 
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
+import { routes } from './app.routes';
 
-// Angular Material Modules
+// Angular Material
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,29 +37,21 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
 
-// Charts
-import { NgChartsModule } from 'ng2-charts';
+// Charts provider (no module declarations here)
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
-// QR Code
-import { QRCodeModule } from 'angularx-qrcode';
-
-// Routing
-import { AppRoutingModule } from './app.routes';
-
-// Components
-import { AppComponent } from './app.component';
+// Components (non-standalone)
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
 import { ChangePasswordComponent } from './components/auth/change-password/change-password.component';
 
-// Admin Components
 import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
 import { RegisterOrganizerComponent } from './components/admin/register-organizer/register-organizer.component';
 import { ManageOrganizersComponent } from './components/admin/manage-organizers/manage-organizers.component';
 import { AuditoriumReportsComponent } from './components/admin/auditorium-reports/auditorium-reports.component';
 
-// Organizer Components
 import { OrganizerDashboardComponent } from './components/organizer/organizer-dashboard/organizer-dashboard.component';
 import { CreateEventComponent } from './components/organizer/create-event/create-event.component';
 import { ManageEventsComponent } from './components/organizer/manage-events/manage-events.component';
@@ -66,7 +61,6 @@ import { SeatingLayoutComponent } from './components/organizer/seating-layout/se
 import { PromoCodesComponent } from './components/organizer/promo-codes/promo-codes.component';
 import { EventAnalyticsComponent } from './components/organizer/event-analytics/event-analytics.component';
 
-// Attendee Components
 import { AttendeeDashboardComponent } from './components/attendee/attendee-dashboard/attendee-dashboard.component';
 import { BrowseEventsComponent } from './components/attendee/browse-events/browse-events.component';
 import { EventViewComponent } from './components/attendee/event-view/event-view.component';
@@ -77,7 +71,6 @@ import { MyBookingsComponent } from './components/attendee/my-bookings/my-bookin
 import { BookingDetailsComponent } from './components/attendee/booking-details/booking-details.component';
 import { WaitlistComponent } from './components/attendee/waitlist/waitlist.component';
 
-// Shared Components
 import { NavbarComponent } from './components/shared/navbar/navbar.component';
 import { SidebarComponent } from './components/shared/sidebar/sidebar.component';
 import { FooterComponent } from './components/shared/footer/footer.component';
@@ -85,83 +78,10 @@ import { LoadingSpinnerComponent } from './components/shared/loading-spinner/loa
 import { ConfirmDialogComponent } from './components/shared/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    // Auth
-    LoginComponent,
-    RegisterComponent,
-    ChangePasswordComponent,
-    // Admin
-    AdminDashboardComponent,
-    RegisterOrganizerComponent,
-    ManageOrganizersComponent,
-    AuditoriumReportsComponent,
-    // Organizer
-    OrganizerDashboardComponent,
-    CreateEventComponent,
-    ManageEventsComponent,
-    EventDetailsComponent,
-    TicketSetupComponent,
-    SeatingLayoutComponent,
-    PromoCodesComponent,
-    EventAnalyticsComponent,
-    // Attendee
-    AttendeeDashboardComponent,
-    BrowseEventsComponent,
-    EventViewComponent,
-    SeatSelectionComponent,
-    BookingCheckoutComponent,
-    PaymentComponent,
-    MyBookingsComponent,
-    BookingDetailsComponent,
-    WaitlistComponent,
-    // Shared
-    NavbarComponent,
-    SidebarComponent,
-    FooterComponent,
-    LoadingSpinnerComponent,
-    ConfirmDialogComponent,
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    AppRoutingModule,
-    // Material
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSidenavModule,
-    MatListModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    MatProgressSpinnerModule,
-    MatChipsModule,
-    MatBadgeModule,
-    MatTabsModule,
-    MatExpansionModule,
-    MatStepperModule,
-    MatRadioModule,
-    MatCheckboxModule,
-    MatSlideToggleModule,
-    MatMenuModule,
-    MatTooltipModule,
-    // Charts & QR
-    NgChartsModule,
-    QRCodeModule,
-  ],
-  providers: [],
-  bootstrap: [AppComponent],
+  // This AppModule is intentionally minimal. The project uses standalone
+  // components and `bootstrapApplication` in `src/main.ts`. Keep providers
+  // here for tooling that may import AppModule.
+  providers: [provideCharts(withDefaultRegisterables())],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {}

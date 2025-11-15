@@ -1,0 +1,12 @@
+<!-- src/app/components/organizer/seating-layout/seating-layout.component.html -->
+<div class="seating-layout">
+  <div class="stage">STAGE</div>
+  <div *ngFor="let section of sections" class="section">
+    <h3>{{section}} Section</h3>
+    <div class="seats-grid">
+      <div *ngFor="let seat of getSeatsBySection(section)" class="seat">
+        {{seat.row}}{{seat.number}}
+      </div>
+    </div>
+  </div>
+</div>

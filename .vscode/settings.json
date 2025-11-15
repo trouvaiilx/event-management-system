@@ -4,6 +4,7 @@
         "autotable",
         "jspdf",
         "qrcode",
+        "Registerables",
         "Waitlist"
     ]
 }

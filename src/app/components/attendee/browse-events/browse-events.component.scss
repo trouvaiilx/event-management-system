@@ -1,0 +1,201 @@
+// src/app/components/attendee/browse-events/browse-events.component.scss
+.browse-events-container {
+  .search-card {
+    margin-bottom: 2rem;
+
+    .search-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+
+      .search-field {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .filter-controls {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+
+        mat-form-field {
+          width: 150px;
+        }
+      }
+    }
+  }
+
+  .results-info {
+    margin-bottom: 1rem;
+    
+    p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+  }
+
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+
+    .event-card {
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      overflow: hidden;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .event-image {
+        position: relative;
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        background-color: #f0f0f0;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .event-badge {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          background-color: rgba(255, 152, 0, 0.9);
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+
+      .event-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 1rem 0;
+      }
+
+      .event-datetime, .event-location {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        color: #666;
+        font-size: 0.9rem;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+          color: #2196f3;
+        }
+
+        .datetime-item {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+      }
+
+      .event-description {
+        color: #666;
+        line-height: 1.6;
+        margin: 1rem 0;
+      }
+
+      .event-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+
+        mat-chip {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+        }
+
+        .days-until {
+          font-size: 0.875rem;
+          color: #999;
+        }
+      }
+
+      mat-card-actions {
+        display: flex;
+        gap: 0.5rem;
+        padding: 1rem;
+        border-top: 1px solid #e0e0e0;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+    }
+  }
+
+  .load-more-section {
+    text-align: center;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .browse-events-container {
+    .search-card {
+      .search-controls {
+        flex-direction: column;
+        align-items: stretch;
+
+        .search-field {
+          width: 100%;
+        }
+
+        .filter-controls {
+          width: 100%;
+          justify-content: space-between;
+
+          mat-form-field {
+            flex: 1;
+          }
+        }
+      }
+    }
+
+    .events-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

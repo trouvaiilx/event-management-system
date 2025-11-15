@@ -1,16 +1,46 @@
 // src/app/components/organizer/event-analytics/event-analytics.component.ts
 
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AnalyticsService } from '../../../services/analytics.service';
 import { EventService } from '../../../services/event.service';
 import { PdfService } from '../../../services/pdf.service';
 import { Event, TicketSalesReport, SeatOccupancyReport } from '../../../models/models';
-import { ChartData, ChartOptions, ChartType } from 'chart.js';
+import { ChartData, ChartOptions } from 'chart.js';
+
+import { NavbarComponent } from '../../shared/navbar/navbar.component';
+import { BaseChartDirective } from 'ng2-charts';
+
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-event-analytics',
+  standalone: true,
+  imports: [
+    CommonModule,
+    NavbarComponent,
+    BaseChartDirective,
+    MatIconModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatDividerModule,
+    MatProgressBarModule,
+    MatTableModule,
+    MatSnackBarModule,
+  ],
   templateUrl: './event-analytics.component.html',
   styleUrls: ['./event-analytics.component.scss'],
 })

@@ -1,0 +1,199 @@
+// src/app/components/organizer/ticket-setup/ticket-setup.component.scss
+
+.ticket-setup-container {
+  .summary-card {
+    margin-bottom: 2rem;
+
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          color: #2196f3;
+        }
+
+        h3 {
+          margin: 0;
+          font-size: 2rem;
+          font-weight: 700;
+          color: #333;
+        }
+
+        p {
+          margin: 0;
+          color: #666;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+
+  .add-ticket-section {
+    margin-bottom: 2rem;
+  }
+
+  .ticket-form-card {
+    margin-bottom: 2rem;
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+  }
+
+  .categories-grid {
+    .category-card {
+      .category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        h3 {
+          margin: 0;
+          color: #333;
+        }
+      }
+
+      .category-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+
+        .detail-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: #666;
+
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+            color: #2196f3;
+          }
+        }
+      }
+
+      .category-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding: 1rem;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+        margin-top: 1rem;
+
+        .stat {
+          display: flex;
+          flex-direction: column;
+
+          .label {
+            font-size: 0.875rem;
+            color: #999;
+          }
+
+          .value {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+          }
+        }
+      }
+
+      .restrictions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background-color: #fff3e0;
+        border-radius: 4px;
+        color: #f57c00;
+        font-size: 0.9rem;
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+
+  .info-card {
+    margin-bottom: 2rem;
+
+    .info-content {
+      display: flex;
+      gap: 1rem;
+
+      mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+        color: #2196f3;
+        flex-shrink: 0;
+      }
+
+      h4 {
+        margin: 0 0 0.5rem 0;
+        color: #333;
+      }
+
+      p {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 1.5rem;
+
+        li {
+          margin: 0.5rem 0;
+          color: #666;
+        }
+      }
+    }
+  }
+
+  .action-section {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .ticket-setup-container {
+    .summary-card .summary-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .categories-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .action-section {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

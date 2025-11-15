@@ -1,0 +1,48 @@
+<!-- src/app/components/attendee/event-view/event-view.component.html -->
+<div class="event-view-container">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div class="page-header">
+      <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1>Event Details</h1>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading && event">
+      <mat-card>
+        <mat-card-content>
+          <h2>{{event.name}}</h2>
+          <p>{{event.description}}</p>
+          <p><strong>Date:</strong> {{event.date | date: 'fullDate'}}</p>
+          <p><strong>Time:</strong> {{event.startTime}} - {{event.endTime}}</p>
+          <p><strong>Location:</strong> {{event.location}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="bookTickets()">
+            <mat-icon>confirmation_number</mat-icon>
+            Book Tickets
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Available Tickets</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngFor="let category of ticketCategories">
+            <p><strong>{{category.type}}:</strong> ${{category.price}} ({{category.availableQuantity}} available)</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

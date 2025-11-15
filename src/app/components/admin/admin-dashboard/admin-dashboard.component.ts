@@ -1,6 +1,7 @@
 // src/app/components/admin/admin-dashboard/admin-dashboard.component.ts
 
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { UserService } from '../../../services/user.service';
@@ -8,8 +9,27 @@ import { EventService } from '../../../services/event.service';
 import { BookingService } from '../../../services/booking.service';
 import { User, Event, Booking } from '../../../models/models';
 
+import { NavbarComponent } from '../../shared/navbar/navbar.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
+
 @Component({
   selector: 'app-admin-dashboard',
+  standalone: true,
+  imports: [
+    CommonModule,
+    NavbarComponent,
+    MatProgressSpinnerModule,
+    MatCardModule,
+    MatIconModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatTableModule,
+  ],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss'],
 })

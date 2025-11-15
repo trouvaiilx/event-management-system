@@ -1,0 +1,96 @@
+<!-- src/app/components/admin/auditorium-reports/auditorium-reports.component.html -->
+<div class="reports-container">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div class="page-header">
+      <h1>Auditorium Reports</h1>
+      <p class="subtitle">Generate and view auditorium usage reports</p>
+    </div>
+
+    <mat-card>
+      <mat-card-content>
+        <form [formGroup]="reportForm" (ngSubmit)="generateReport()">
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Report Type</mat-label>
+              <mat-select formControlName="reportType">
+                <mat-option value="usage">Auditorium Usage</mat-option>
+                <mat-option value="revenue">Revenue Report</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Period</mat-label>
+              <mat-select formControlName="period">
+                <mat-option value="weekly">Weekly</mat-option>
+                <mat-option value="monthly">Monthly</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="date">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+            <span *ngIf="!loading">Generate Report</span>
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="usageReport">
+      <mat-card-header>
+        <mat-card-title>Auditorium Usage Report</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p><strong>Period:</strong> {{usageReport.period}}</p>
+        <p><strong>Total Events:</strong> {{usageReport.totalEvents}}</p>
+        <p><strong>Total Bookings:</strong> {{usageReport.totalBookings}}</p>
+        <p><strong>Total Revenue:</strong> ${{usageReport.totalRevenue.toFixed(2)}}</p>
+        <p><strong>Average Occupancy:</strong> {{usageReport.averageOccupancy.toFixed(2)}}%</p>
+
+        <button mat-raised-button color="primary" (click)="downloadUsageReport()">
+          <mat-icon>download</mat-icon>
+          Download PDF
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="revenueReport">
+      <mat-card-header>
+        <mat-card-title>Revenue Report</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p><strong>Period:</strong> {{revenueReport.period}}</p>
+        <p><strong>Total Revenue:</strong> ${{revenueReport.totalRevenue.toFixed(2)}}</p>
+
+        <h3>Revenue by Event</h3>
+        <table mat-table [dataSource]="revenueReport.revenueByEvent">
+          <ng-container matColumnDef="event">
+            <th mat-header-cell *matHeaderCellDef>Event</th>
+            <td mat-cell *matCellDef="let item">{{item.eventName}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="revenue">
+            <th mat-header-cell *matHeaderCellDef>Revenue</th>
+            <td mat-cell *matCellDef="let item">${{item.revenue.toFixed(2)}}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['event', 'revenue']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['event', 'revenue']"></tr>
+        </table>
+
+        <button mat-raised-button color="primary" (click)="downloadRevenueReport()">
+          <mat-icon>download</mat-icon>
+          Download PDF
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

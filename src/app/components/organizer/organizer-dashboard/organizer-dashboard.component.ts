@@ -1,14 +1,35 @@
 // src/app/components/organizer/organizer-dashboard/organizer-dashboard.component.ts
 
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { EventService } from '../../../services/event.service';
 import { BookingService } from '../../../services/booking.service';
 import { User, Event, Booking, EventStatus } from '../../../models/models';
 
+import { NavbarComponent } from '../../shared/navbar/navbar.component';
+
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+
 @Component({
   selector: 'app-organizer-dashboard',
+  standalone: true,
+  imports: [
+    CommonModule,
+    NavbarComponent,
+    MatProgressSpinnerModule,
+    MatCardModule,
+    MatIconModule,
+    MatChipsModule,
+    MatButtonModule,
+    MatTableModule,
+  ],
   templateUrl: './organizer-dashboard.component.html',
   styleUrls: ['./organizer-dashboard.component.scss'],
 })

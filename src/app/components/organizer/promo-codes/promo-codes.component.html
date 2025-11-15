@@ -1,0 +1,99 @@
+<!-- src/app/components/organizer/promo-codes/promo-codes.component.html -->
+<div class="promo-codes-container">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div class="page-header">
+      <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1>Promotional Codes</h1>
+        <p class="subtitle" *ngIf="event">{{event.name}}</p>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading">
+      <button mat-raised-button color="primary" (click)="toggleForm()" *ngIf="!showForm">
+        <mat-icon>add_circle</mat-icon>
+        Create Promo Code
+      </button>
+
+      <mat-card *ngIf="showForm">
+        <mat-card-header>
+          <mat-card-title>Create Promo Code</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="promoForm" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Promo Code</mat-label>
+              <input matInput formControlName="code" placeholder="SUMMER2024">
+              <mat-error *ngIf="f['code'].hasError('required')">Code is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Discount Percentage</mat-label>
+              <input matInput type="number" formControlName="discountPercentage" placeholder="10">
+              <span matSuffix>%</span>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Valid From</mat-label>
+              <input matInput [matDatepicker]="fromPicker" formControlName="validFrom">
+              <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #fromPicker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Valid Until</mat-label>
+              <input matInput [matDatepicker]="untilPicker" formControlName="validUntil">
+              <mat-datepicker-toggle matSuffix [for]="untilPicker"></mat-datepicker-toggle>
+              <mat-datepicker #untilPicker></mat-datepicker>
+            </mat-form-field>
+
+            <div class="button-group">
+              <button mat-raised-button color="primary" type="submit">Create</button>
+              <button mat-button type="button" (click)="toggleForm()">Cancel</button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Active Promo Codes</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="promoCodes.length === 0" class="empty-state">
+            <mat-icon>local_offer</mat-icon>
+            <p>No promo codes created yet</p>
+          </div>
+
+          <table mat-table [dataSource]="promoCodes" *ngIf="promoCodes.length > 0">
+            <ng-container matColumnDef="code">
+              <th mat-header-cell *matHeaderCellDef>Code</th>
+              <td mat-cell *matCellDef="let promo">{{promo.code}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="discount">
+              <th mat-header-cell *matHeaderCellDef>Discount</th>
+              <td mat-cell *matCellDef="let promo">{{promo.discountPercentage}}%</td>
+            </ng-container>
+
+            <ng-container matColumnDef="usage">
+              <th mat-header-cell *matHeaderCellDef>Usage</th>
+              <td mat-cell *matCellDef="let promo">{{promo.usageCount}}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['code', 'discount', 'usage']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['code', 'discount', 'usage']"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
