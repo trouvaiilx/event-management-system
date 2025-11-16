@@ -57,10 +57,14 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.currentUserValue;
+    // Set loading to false immediately so the template renders
+    this.loading = false;
+    // Then load dashboard data asynchronously
     this.loadDashboardData();
   }
 
   loadDashboardData(): void {
+    // Re-enable loading indicator for UX feedback
     this.loading = true;
 
     // Load organizers
@@ -69,7 +73,10 @@ export class AdminDashboardComponent implements OnInit {
         this.totalOrganizers = organizers.length;
         this.recentOrganizers = organizers.slice(0, 5);
       },
-      error: (error) => console.error('Error loading organizers:', error),
+      error: (error) => {
+        console.error('Error loading organizers:', error);
+        this.loading = false;
+      },
     });
 
     // Load events
@@ -80,7 +87,10 @@ export class AdminDashboardComponent implements OnInit {
           .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
           .slice(0, 5);
       },
-      error: (error) => console.error('Error loading events:', error),
+      error: (error) => {
+        console.error('Error loading events:', error);
+        this.loading = false;
+      },
     });
 
     // Load bookings and calculate revenue

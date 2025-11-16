@@ -15,12 +15,16 @@ export class AuthService {
 
   constructor(private storageService: StorageService) {
     const storedUser = this.storageService.get('currentUser');
-    this.currentUserSubject = new BehaviorSubject<User | null>(storedUser);
+    console.log('AuthService.constructor: storedUser from storage =', storedUser);
+    // Initialize with null if storedUser is undefined, to avoid undefined !== null returning true
+    this.currentUserSubject = new BehaviorSubject<User | null>(storedUser || null);
     this.currentUser$ = this.currentUserSubject.asObservable();
   }
 
   public get currentUserValue(): User | null {
-    return this.currentUserSubject.value;
+    const value = this.currentUserSubject.value;
+    console.log('AuthService.currentUserValue: returning', value);
+    return value;
   }
 
   login(email: string, password: string): Observable<User> {
@@ -96,7 +100,9 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return this.currentUserValue !== null;
+    const result = this.currentUserValue !== null;
+    console.log('AuthService.isLoggedIn: currentUserValue is', this.currentUserValue, '→ returning', result);
+    return result;
   }
 
   hasRole(role: UserRole): boolean {

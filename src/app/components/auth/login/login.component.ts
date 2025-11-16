@@ -1,6 +1,6 @@
 // src/app/components/auth/login/login.component.ts
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -38,13 +38,13 @@ export class LoginComponent implements OnInit {
   hidePassword = true;
   returnUrl: string = '';
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private snackBar: MatSnackBar
-  ) {
+  private formBuilder = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private snackBar = inject(MatSnackBar);
+
+  constructor() {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -52,15 +52,25 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('Login component initialized');
-
     // Get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '';
 
-    // Redirect if already logged in
+    console.log('LoginComponent.ngOnInit: isLoggedIn =', this.authService.isLoggedIn());
+
+    // If already logged in, hide the login UI and redirect
     if (this.authService.isLoggedIn()) {
-      console.log('Already logged in, redirecting');
+      console.log('LoginComponent: User is logged in, hiding login container and redirecting');
+      // Hide the login container element to prevent it from overlaying other components
+      const loginContainer = document.querySelector('.login-container') as HTMLElement;
+      if (loginContainer) {
+        loginContainer.style.display = 'none';
+        console.log('LoginComponent: Hidden login container');
+      } else {
+        console.warn('LoginComponent: login container not found in DOM');
+      }
       this.redirectToDashboard();
+    } else {
+      console.log('LoginComponent: User not logged in, login form will display');
     }
   }
 
@@ -69,47 +79,48 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log('Login form submitted');
-
     if (this.loginForm.invalid) {
-      console.log('Form invalid');
-      Object.keys(this.loginForm.controls).forEach((key) => {
-        this.loginForm.get(key)?.markAsTouched();
-      });
       return;
     }
 
     this.loading = true;
     const { email, password } = this.loginForm.value;
-    console.log('Attempting login for:', email);
+
+    // Safety timeout: if navigation doesn't complete in 5 seconds, unblock loading
+    const navigationTimeout = setTimeout(() => {
+      console.error('LoginComponent: Navigation timeout - forcing loading = false');
+      this.loading = false;
+    }, 5000);
 
     this.authService.login(email, password).subscribe({
       next: (user) => {
-        console.log('Login successful, user:', user);
-        this.loading = false;
-
+        clearTimeout(navigationTimeout);
         this.snackBar.open('Login successful!', 'Close', {
-          duration: 2000,
+          duration: 3000,
           panelClass: ['success-snackbar'],
         });
 
-        // Small delay for snackbar to show
-        setTimeout(() => {
-          // Check if user must change password
-          if (user.mustChangePassword) {
-            console.log('User must change password');
-            this.router.navigate(['/change-password']);
-          } else if (this.returnUrl) {
-            console.log('Redirecting to return URL:', this.returnUrl);
-            this.router.navigateByUrl(this.returnUrl);
-          } else {
-            console.log('Redirecting to dashboard');
-            this.redirectToDashboard();
-          }
-        }, 500);
+        // stop loading spinner before navigation
+        this.loading = false;
+
+        console.log('LoginComponent.onSubmit: login success, hiding login container');
+        // Hide the login container so dashboard can show
+        const loginContainer = document.querySelector('.login-container') as HTMLElement;
+        if (loginContainer) {
+          loginContainer.style.display = 'none';
+        }
+
+        // Check if user must change password
+        if (user.mustChangePassword) {
+          this.router.navigate(['/change-password']);
+        } else if (this.returnUrl) {
+          this.router.navigateByUrl(this.returnUrl);
+        } else {
+          this.redirectToDashboard();
+        }
       },
       error: (error) => {
-        console.error('Login failed:', error);
+        clearTimeout(navigationTimeout);
         this.loading = false;
         this.snackBar.open(error.message || 'Login failed. Please try again.', 'Close', {
           duration: 5000,
@@ -121,34 +132,32 @@ export class LoginComponent implements OnInit {
 
   private redirectToDashboard(): void {
     const user = this.authService.currentUserValue;
-    console.log('Redirecting to dashboard for role:', user?.role);
-
+    console.log('LoginComponent.redirectToDashboard: currentUser =', user);
     if (!user) {
-      console.error('No user found!');
+      console.error('LoginComponent.redirectToDashboard: no user, cannot redirect');
       return;
     }
-
+    console.log('LoginComponent.redirectToDashboard: user role =', user.role);
     switch (user.role) {
       case UserRole.ADMIN:
-        console.log('Navigating to /admin/dashboard');
+        console.log('LoginComponent: calling router.navigate([/admin/dashboard])');
         this.router.navigate(['/admin/dashboard']);
         break;
       case UserRole.EVENT_ORGANIZER:
-        console.log('Navigating to /organizer/dashboard');
+        console.log('LoginComponent: calling router.navigate([/organizer/dashboard])');
         this.router.navigate(['/organizer/dashboard']);
         break;
       case UserRole.ATTENDEE:
-        console.log('Navigating to /attendee/dashboard');
+        console.log('LoginComponent: calling router.navigate([/attendee/dashboard])');
         this.router.navigate(['/attendee/dashboard']);
         break;
       default:
-        console.error('Unknown role, redirecting to login');
+        console.log('LoginComponent: unknown role, calling router.navigate([/login])');
         this.router.navigate(['/login']);
     }
   }
 
   navigateToRegister(): void {
-    console.log('Navigating to register');
     this.router.navigate(['/register']);
   }
 }
