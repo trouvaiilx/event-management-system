@@ -11,6 +11,7 @@ export class StorageService {
   private storageSubjects: Map<string, BehaviorSubject<any>> = new Map();
 
   constructor() {
+    console.log('StorageService initialized');
     this.initializeDefaultData();
   }
 
@@ -38,6 +39,8 @@ export class StorageService {
     this.set('payments', []);
     this.set('waitlists', []);
     this.set('notifications', []);
+
+    console.log('Default data initialized. Admin user:', defaultAdmin.email);
   }
 
   set(key: string, value: any): void {
@@ -76,6 +79,7 @@ export class StorageService {
     const collection = this.get(collectionKey) || [];
     collection.push(item);
     this.set(collectionKey, collection);
+    console.log(`Added to ${collectionKey}, new length:`, collection.length);
   }
 
   updateInCollection(collectionKey: string, id: string, updatedItem: any): void {
@@ -84,6 +88,7 @@ export class StorageService {
     if (index !== -1) {
       collection[index] = { ...collection[index], ...updatedItem };
       this.set(collectionKey, collection);
+      console.log(`Updated in ${collectionKey}, id:`, id);
     }
   }
 
@@ -91,6 +96,7 @@ export class StorageService {
     let collection = this.get(collectionKey) || [];
     collection = collection.filter((item: any) => item.id !== id);
     this.set(collectionKey, collection);
+    console.log(`Removed from ${collectionKey}, id:`, id);
   }
 
   findInCollection(collectionKey: string, predicate: (item: any) => boolean): any {

@@ -1,7 +1,26 @@
+// src/app/app.routes.ts
+
 import { Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
+import { RoleGuard } from './guards/role.guard';
+
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
 import { ChangePasswordComponent } from './components/auth/change-password/change-password.component';
+
+import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
+import { RegisterOrganizerComponent } from './components/admin/register-organizer/register-organizer.component';
+import { ManageOrganizersComponent } from './components/admin/manage-organizers/manage-organizers.component';
+import { AuditoriumReportsComponent } from './components/admin/auditorium-reports/auditorium-reports.component';
+
+import { OrganizerDashboardComponent } from './components/organizer/organizer-dashboard/organizer-dashboard.component';
+import { CreateEventComponent } from './components/organizer/create-event/create-event.component';
+import { ManageEventsComponent } from './components/organizer/manage-events/manage-events.component';
+import { EventDetailsComponent } from './components/organizer/event-details/event-details.component';
+import { TicketSetupComponent } from './components/organizer/ticket-setup/ticket-setup.component';
+import { PromoCodesComponent } from './components/organizer/promo-codes/promo-codes.component';
+import { EventAnalyticsComponent } from './components/organizer/event-analytics/event-analytics.component';
+
 import { AttendeeDashboardComponent } from './components/attendee/attendee-dashboard/attendee-dashboard.component';
 import { BrowseEventsComponent } from './components/attendee/browse-events/browse-events.component';
 import { EventViewComponent } from './components/attendee/event-view/event-view.component';
@@ -11,44 +30,70 @@ import { PaymentComponent } from './components/attendee/payment/payment.componen
 import { MyBookingsComponent } from './components/attendee/my-bookings/my-bookings.component';
 import { BookingDetailsComponent } from './components/attendee/booking-details/booking-details.component';
 import { WaitlistComponent } from './components/attendee/waitlist/waitlist.component';
-import { OrganizerDashboardComponent } from './components/organizer/organizer-dashboard/organizer-dashboard.component';
-import { CreateEventComponent } from './components/organizer/create-event/create-event.component';
-import { ManageEventsComponent } from './components/organizer/manage-events/manage-events.component';
-import { EventDetailsComponent } from './components/organizer/event-details/event-details.component';
-import { TicketSetupComponent } from './components/organizer/ticket-setup/ticket-setup.component';
-import { SeatingLayoutComponent } from './components/organizer/seating-layout/seating-layout.component';
-import { PromoCodesComponent } from './components/organizer/promo-codes/promo-codes.component';
-import { EventAnalyticsComponent } from './components/organizer/event-analytics/event-analytics.component';
-import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
-import { RegisterOrganizerComponent } from './components/admin/register-organizer/register-organizer.component';
-import { ManageOrganizersComponent } from './components/admin/manage-organizers/manage-organizers.component';
-import { AuditoriumReportsComponent } from './components/admin/auditorium-reports/auditorium-reports.component';
 
 export const routes: Routes = [
-	{ path: 'login', component: LoginComponent },
-	{ path: 'register', component: RegisterComponent },
-	{ path: 'change-password', component: ChangePasswordComponent },
-	{ path: '', redirectTo: 'attendee/dashboard', pathMatch: 'full' },
-	{ path: 'attendee/dashboard', component: AttendeeDashboardComponent },
-	{ path: 'attendee/browse-events', component: BrowseEventsComponent },
-	{ path: 'attendee/event/:id', component: EventViewComponent },
-	{ path: 'attendee/seat-selection/:id', component: SeatSelectionComponent },
-	{ path: 'attendee/booking-checkout/:id', component: BookingCheckoutComponent },
-	{ path: 'attendee/payment/:id', component: PaymentComponent },
-	{ path: 'attendee/my-bookings', component: MyBookingsComponent },
-	{ path: 'attendee/booking/:id', component: BookingDetailsComponent },
-	{ path: 'attendee/waitlist', component: WaitlistComponent },
-	{ path: 'organizer/dashboard', component: OrganizerDashboardComponent },
-	{ path: 'organizer/create-event', component: CreateEventComponent },
-	{ path: 'organizer/manage-events', component: ManageEventsComponent },
-	{ path: 'organizer/event/:id', component: EventDetailsComponent },
-	{ path: 'organizer/event/:id/ticket-setup', component: TicketSetupComponent },
-	{ path: 'organizer/event/:id/seating-layout', component: SeatingLayoutComponent },
-	{ path: 'organizer/event/:id/promo-codes', component: PromoCodesComponent },
-	{ path: 'organizer/event/:id/analytics', component: EventAnalyticsComponent },
-	{ path: 'admin/dashboard', component: AdminDashboardComponent },
-	{ path: 'admin/register-organizer', component: RegisterOrganizerComponent },
-	{ path: 'admin/manage-organizers', component: ManageOrganizersComponent },
-	{ path: 'admin/reports', component: AuditoriumReportsComponent },
-	{ path: '**', redirectTo: 'attendee/dashboard' },
+  // Public Routes
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+
+  // Password Change (requires auth)
+  {
+    path: 'change-password',
+    component: ChangePasswordComponent,
+    canActivate: [AuthGuard],
+  },
+
+  // Admin Routes
+  {
+    path: 'admin',
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ADMIN' },
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'register-organizer', component: RegisterOrganizerComponent },
+      { path: 'manage-organizers', component: ManageOrganizersComponent },
+      { path: 'reports', component: AuditoriumReportsComponent },
+    ],
+  },
+
+  // Organizer Routes
+  {
+    path: 'organizer',
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'EVENT_ORGANIZER' },
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: OrganizerDashboardComponent },
+      { path: 'create-event', component: CreateEventComponent },
+      { path: 'manage-events', component: ManageEventsComponent },
+      { path: 'event/:id', component: EventDetailsComponent },
+      { path: 'event/:id/tickets', component: TicketSetupComponent },
+      { path: 'event/:id/promo-codes', component: PromoCodesComponent },
+      { path: 'event/:id/analytics', component: EventAnalyticsComponent },
+    ],
+  },
+
+  // Attendee Routes
+  {
+    path: 'attendee',
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ATTENDEE' },
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: AttendeeDashboardComponent },
+      { path: 'browse-events', component: BrowseEventsComponent },
+      { path: 'event/:id', component: EventViewComponent },
+      { path: 'event/:id/seats', component: SeatSelectionComponent },
+      { path: 'checkout', component: BookingCheckoutComponent },
+      { path: 'payment/:bookingId', component: PaymentComponent },
+      { path: 'my-bookings', component: MyBookingsComponent },
+      { path: 'booking/:id', component: BookingDetailsComponent },
+      { path: 'waitlist', component: WaitlistComponent },
+    ],
+  },
+
+  // Catch all - redirect to login
+  { path: '**', redirectTo: '/login' },
 ];

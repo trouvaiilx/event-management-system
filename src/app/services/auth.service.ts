@@ -2,7 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { delay, map } from 'rxjs/operators';
+import { delay, map, catchError } from 'rxjs/operators';
 import { User, UserRole } from '../models/models';
 import { StorageService } from './storage.service';
 
@@ -24,31 +24,43 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<User> {
-    // Simulate API call delay
+    console.log('Login attempt:', email);
+
     return of(null).pipe(
       delay(500),
       map(() => {
         const users: User[] = this.storageService.get('users') || [];
+        console.log('Available users:', users.length);
+
         const user = users.find((u) => u.email === email && u.password === password);
 
         if (!user) {
+          console.error('User not found or password incorrect');
           throw new Error('Invalid email or password');
         }
 
         if (!user.isActive) {
+          console.error('User account inactive');
           throw new Error('Account is inactive. Please contact administrator.');
         }
+
+        console.log('Login successful for:', user.email, 'Role:', user.role);
 
         // Store current user
         this.storageService.set('currentUser', user);
         this.currentUserSubject.next(user);
 
         return user;
+      }),
+      catchError((error) => {
+        console.error('Login error:', error);
+        return throwError(() => error);
       })
     );
   }
 
   logout(): void {
+    console.log('Logging out user');
     this.storageService.delete('currentUser');
     this.currentUserSubject.next(null);
   }
@@ -104,6 +116,8 @@ export class AuthService {
   }
 
   register(userData: Partial<User>): Observable<User> {
+    console.log('Register attempt:', userData.email);
+
     return of(null).pipe(
       delay(500),
       map(() => {
@@ -111,6 +125,7 @@ export class AuthService {
 
         // Check if email already exists
         if (users.find((u) => u.email === userData.email)) {
+          console.error('Email already registered');
           throw new Error('Email already registered');
         }
 
@@ -128,8 +143,13 @@ export class AuthService {
         };
 
         this.storageService.addToCollection('users', newUser);
+        console.log('Registration successful:', newUser.email);
 
         return newUser;
+      }),
+      catchError((error) => {
+        console.error('Registration error:', error);
+        return throwError(() => error);
       })
     );
   }

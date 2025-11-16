@@ -1,0 +1,9 @@
+// src/app/app.scss - Clean minimal styles for root component
+
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+}
+
+// All other styles are in global styles.scss
